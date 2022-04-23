@@ -33,6 +33,14 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'social_django',
     'portfolio',
+    'django.contrib.sites',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.google',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -66,6 +74,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
+
+                 'django.template.context_processors.request',
             ],
         },
     },
@@ -104,11 +114,13 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-AUTHENTICATION_BACKENDS = (
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
-     'social_core.backends.github.GithubOAuth2',
-)
 
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 
 # Internationalization
@@ -146,3 +158,24 @@ LOGOUT_REDIRECT_URL = '/'
 
 SOCIAL_AUTH_GITHUB_KEY = '562ca04a25117762c61e'
 SOCIAL_AUTH_GITHUB_SECRET = 'c3f5c519ef1c590be79185d9f868f3a820712671'
+
+
+SITE_ID = 1
+
+
+# 153079849670-oraa4f1eb0a7po1c8rnfp275grt2kbbi.apps.googleusercontent.com
+
+# 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     
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
