@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'crispy_forms',
     'social_django',
     'portfolio',
     'django.contrib.sites',
@@ -64,7 +65,7 @@ ROOT_URLCONF = 'ISP.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -153,7 +154,7 @@ AUTH_USER_MODEL = 'portfolio.User'
 
 
 LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/accounts/login'
 
 
 SOCIAL_AUTH_GITHUB_KEY = '562ca04a25117762c61e'
@@ -179,3 +180,6 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
+
+CRISPY_TENPLATE_PACK = "baotstrap4"
+
