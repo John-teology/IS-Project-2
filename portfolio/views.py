@@ -9,7 +9,10 @@ from django.contrib.auth.decorators import login_required
 
 from .models import *
 
+
 # Create your views here.
+
+@login_required
 def index(request):
     return render(request, "portfolio/index.html")
 
