@@ -32,7 +32,6 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'crispy_forms',
-    'social_django',
     'portfolio',
     'django.contrib.sites',
 
@@ -182,4 +181,8 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 CRISPY_TENPLATE_PACK = "baotstrap4"
+
+
+
+
 
