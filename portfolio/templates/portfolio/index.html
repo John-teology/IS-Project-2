@@ -1,7 +1,8 @@
-{% extends "portfolio/layout.html" %}
-{% load static %} 
+{% extends "portfolio/layout.html" %} {% load static %} {% block body %}
 
+<h1>Hello {{user.username}}</h1>
 
+<a href="{% url 'account_logout' %}">logout</a>
 
 {% block body %}
 
@@ -18,4 +19,5 @@
 
    {{s}}
 
+{% endblock %}
 {% endblock %}

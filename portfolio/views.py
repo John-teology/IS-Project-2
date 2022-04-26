@@ -10,7 +10,9 @@ from allauth.socialaccount.models import SocialAccount
 
 from .models import *
 
+
 # Create your views here.
+
 @login_required
 def index(request):
     data = SocialAccount.objects.get(user=request.user).extra_data
