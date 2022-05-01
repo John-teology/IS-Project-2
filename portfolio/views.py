@@ -15,8 +15,5 @@ from .models import *
 
 @login_required
 def index(request):
-    data = SocialAccount.objects.get(user=request.user).extra_data
-    return render(request, "portfolio/index.html",{
-        'data' : data['login']
-    })
+    return render(request, "portfolio/index.html")
 
