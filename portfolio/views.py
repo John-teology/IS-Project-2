@@ -17,3 +17,9 @@ from .models import *
 def index(request):
     return render(request, "portfolio/index.html")
 
+
+
+def leader(request):
+    return render(request, "portfolio/leaderboards.html")
+    
+
