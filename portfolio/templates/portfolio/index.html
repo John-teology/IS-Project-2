@@ -1,9 +1,11 @@
-{% extends "portfolio/layout.html" %} 
-{% load static %}
- {% block body %}
+{% extends "portfolio/layout.html" %} {% load static %} {% block body %}
 
 <h1>Hello {{user.username}}</h1>
 
-<a href="{% url 'account_logout' %}">logout</a>
+<form method="post" action="/accounts/logout/">
+  {% csrf_token %}
+
+  <button class="btn btn-dark" type="submit">Sign Out</button>
+</form>
 
 {% endblock %}
