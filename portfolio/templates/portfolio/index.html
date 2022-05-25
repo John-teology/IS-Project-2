@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>BizConsult - Consulting HTML Template</title>
+    <title>Unknown</title>
 
     <!-- Favicon -->
     <link href="img/favicon.ico" rel="icon" />
@@ -90,11 +90,20 @@
               </div>
               <a href="contact.html" class="nav-item nav-link">Contact</a>
             </div>
+            {% if user.username %}
             <a
               href="{% url 'account_login' %}"
               class="btn btn-light rounded-pill text-primary py-2 px-4 ms-lg-5"
-              >Free Quote</a
             >
+              {{user.username}}</a
+            >
+            {% else %}
+            <a
+              href="{% url 'account_login' %}"
+              class="btn btn-light rounded-pill text-primary py-2 px-4 ms-lg-5"
+              >Login</a
+            >
+            {% endif %}
           </div>
         </nav>
 
