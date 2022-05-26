@@ -6,7 +6,8 @@ from . import views
 
 urlpatterns = [
     path("",views.index, name="index"),
-    path('leaderboards/', views.leader, name="leader")
+    path('leaderboards/', views.leader, name="leader"),
+    path('read/', views.read, name='read')
     
     
 ]
