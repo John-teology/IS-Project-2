@@ -27,8 +27,11 @@ def leader(request):
 def read(request):
     x = requests.get('https://api.github.com/users/john-teology/repos')
     data = x.json()
+    lang = []
+    for i in range(len(data)):
+        lang.append(data[i]['language'])
     return render(request, "portfolio/read.html", {
-        'data' : data[0]['name']
+        'data' : lang
     })
 
     

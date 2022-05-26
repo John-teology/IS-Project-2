@@ -1,5 +1,15 @@
 {% extends "portfolio/layout.html" %} {% load static %} {% block body %}
 
-<h1>{{ data }}</h1>
+{% for d in data %}
+    <h5>{{d}}</h5>
+{% endfor %}
+
+
+<img src="https://ghchart.rshah.org/781402/john-teology" alt="2016rshah's Blue Github chart" />
+
+<h1>{{user.id}}</h1>
+
+
+
 
 {% endblock %}
