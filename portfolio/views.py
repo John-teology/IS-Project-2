@@ -9,6 +9,8 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from allauth.socialaccount.models import SocialAccount
 import requests
+from bs4 import BeautifulSoup
+
 
 from .models import *
 
@@ -25,28 +27,27 @@ def leader(request):
 
 
 # https://avatars.githubusercontent.com/John-teology github profile image hehe
-def read(request):
+def read(request): 
     try:
-        headers = {"Authorization" : "Basic"}
+        prog = []
         x = requests.get('https://api.github.com/users/John-teology/repos')
         data = x.json()
-        lang = []
+        langu = []
         for i in range(len(data)):
-            lang.append(data[i]['name'])
+            langu.append(data[i]['name'])
 
-        sum = []
-        for a in lang:
-            y = requests.get(f'https://api.github.com/repos/John-teology/{a}/languages')
-            data1 = y.json()
-            try:
-                sum.append(data1['JavaScript'])  
-            except KeyError:
-                sum.append(0)  
-
+        for la in langu:
+            html_text = requests.get(f'https://github.com/John-teology/{la}').content
+            soup = BeautifulSoup(html_text, 'lxml')
+            langs = soup.find_all('a',class_ = 'd-inline-flex flex-items-center flex-nowrap Link--secondary no-underline text-small mr-3')
+            for lang in langs:
+                d = lang.find_all('span')
+                for a in d:
+                    prog.append(a.text)
+    
 
         return render(request, "portfolio/read.html", {
-            'lang': lang,
-            'data' : sum
+            'data' : prog
         })
     except KeyError:
         return render(request, "portfolio/read.html", {
@@ -55,26 +56,53 @@ def read(request):
 
 
 
-# from bs4 import BeautifulSoup
-# import requests
 
-# x = requests.get('https://api.github.com/users/john-teology/repos')
+
+# import requests
+# from bs4 import BeautifulSoup
+
+# import pandas as pd
+
+# name = 'jaeam17'
+# # name = 'John-teology'
+
+# x = requests.get(f'https://api.github.com/users/{name}/repos')
 # data = x.json()
+# prog = []
 # langu = []
+# lang_dict = {}
 # for i in range(len(data)):
 #     langu.append(data[i]['name'])
 
 # for la in langu:
-#     html_text = requests.get(f'https://github.com/John-teology/{la}').content
+#     html_text = requests.get(f'https://github.com/{name}/{la}').content
 #     soup = BeautifulSoup(html_text, 'lxml')
 #     langs = soup.find_all('a',class_ = 'd-inline-flex flex-items-center flex-nowrap Link--secondary no-underline text-small mr-3')
-#     print(la)
 #     for lang in langs:
 #         d = lang.find_all('span')
 #         for a in d:
-#             print(a.text)
-#     print('\n')
+#             prog.append(a.text.replace("%",""))
     
+#     lang_dict[la] = {prog[i]: prog[i + 1] for i in range(0, len(prog), 2)}
+#     prog[:] = []
+
+
+# df = pd.DataFrame(lang_dict)
+# df.index.name = "languages"
+# df = df.astype(float)
+# df = df.reset_index(level=0)
+# df = df.fillna(0)
+# df['lang_score'] = df.sum(axis=1, numeric_only=True)
+
+# # print(df['lang_score'].sum())
+# # print(df[df.index == 'Python' ]['lang_score'])
+
+# val = df[df['languages'] == 'HTML']['lang_score']
+# print(val.values)
+# abno = {'name': float(val.values)}
+
+# print(abno)
+
 
 
 
