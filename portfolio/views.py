@@ -63,8 +63,8 @@ def read(request):
 
 # import pandas as pd
 
-# name = 'jaeam17'
-# # name = 'John-teology'
+# # name = 'jaeam17'
+# name = 'John-teology'
 
 # x = requests.get(f'https://api.github.com/users/{name}/repos')
 # data = x.json()
@@ -94,14 +94,18 @@ def read(request):
 # df = df.fillna(0)
 # df['lang_score'] = df.sum(axis=1, numeric_only=True)
 
-# # print(df['lang_score'].sum())
-# # print(df[df.index == 'Python' ]['lang_score'])
 
-# val = df[df['languages'] == 'HTML']['lang_score']
-# print(val.values)
-# abno = {'name': float(val.values)}
+# into_db = { }
 
-# print(abno)
+# dat = df['languages']
+
+# for d in dat:
+#     val = df[df['languages'] == d ]['lang_score']
+#     into_db[d] = float(val.values)
+    
+# print(into_db)
+# print(df['lang_score'].sum())
+
 
 
 
