@@ -1,0 +1,21 @@
+{% extends "portfolio/layout.html" %} {% load static %} {% block body %}
+
+
+{% if msg %}
+    <h3>{{msg}}</h3>
+{% endif %}
+
+{% if data %}
+    <h3>{{data}}</h3>
+{% endif %}
+
+<img src="https://ghchart.rshah.org/781402/John-teology" alt="2016rshah's Blue Github chart" />
+
+<h1>{{user.first_name}}</h1>
+
+<img src="https://icon-widget.codersrank.io/api/PHP" alt="JavaScript">
+
+
+
+
+{% endblock %}
