@@ -25,25 +25,6 @@ def index(request):
 def leader(request):
     return render(request, "portfolio/leaderboards.html")
 
-
-# https://avatars.githubusercontent.com/John-teology github profile image hehe
-def read(request): 
-    try:
-        prog = []
-        x = requests.get('https://api.github.com/users/John-teology/repos')
-        data = x.json()
-        langu = []
-        for i in range(len(data)):
-            langu.append(data[i]['name'])
-
-        for la in langu:
-            html_text = requests.get(f'https://github.com/John-teology/{la}').content
-            soup = BeautifulSoup(html_text, 'lxml')
-            langs = soup.find_all('a',class_ = 'd-inline-flex flex-items-center flex-nowrap Link--secondary no-underline text-small mr-3')
-            for lang in langs:
-                d = lang.find_all('span')
-                for a in d:
-                    prog.append(a.text)
     
 
 # https://avatars.githubusercontent.com/John-teology github profile image hehe
