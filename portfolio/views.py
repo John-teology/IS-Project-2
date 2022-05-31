@@ -11,10 +11,6 @@ from allauth.socialaccount.models import SocialAccount
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-<<<<<<< HEAD
-=======
-
->>>>>>> 49c225815b7e239408983ed54be5946324261e43
 
 from .models import *
 
