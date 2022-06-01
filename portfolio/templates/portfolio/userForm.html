@@ -7,11 +7,13 @@
     <title>FillmeUp</title>
   </head>
   <body>
-    <h1>Form</h1>
+  <h1>{{request.user}}</h1>      
 
-    {% if request.session.githuberr %}
+    </form>
+
     <h3>{{request.session.githuberr}}</h3>
-    {% endif %}
+    <h3>{{request.session.githubexist}}</h3>
+    
     <form action="{% url 'checkform' %}" method="post">
       {% csrf_token %}
       <select name="yearlevelid" id="">
@@ -28,7 +30,7 @@
       <input id="nick" name="nickname" type="text" />
 
       <label for="git">Github</label>
-      <input id="git" name="github" type="text" />
+      <input id="git" name="github" type="text" value="{{request.session.githubn}}"/>
       <label for="about">About Me </label>
       <textarea name="aboutMe" id="about" cols="30" rows="10"></textarea>
 

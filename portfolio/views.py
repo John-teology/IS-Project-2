@@ -155,22 +155,21 @@ def saving(input,user):
 
 @login_required
 def profileForm(request):
+    userid = User.objects.get(username = request.user)
+    if (Profile.objects.filter(userID = userid).count() > 0):
+        p = Profile.objects.get(userID = request.user)
+        return HttpResponseRedirect(reverse('profile', args=(str(p.githubName),)))
+    
     yearlev = YearLevel.objects.all()
     course = Course.objects.all()
-
     return render(request,"portfolio/userForm.html",{
         'yearlevels': yearlev,
         'courses' : course,
     })
 
-def is_githubvalid(githubName):
-    x = requests.get(f'https://github.com/{githubName}').status_code
-    if x == 200:
-        return True
-    else:
-        return False
-
 def formValidation(request):
+    
+    
     user = request.user
     if request.method == "POST":
         c_id = request.POST['courseid']
@@ -180,23 +179,48 @@ def formValidation(request):
         about = request.POST['aboutMe']
     if is_githubvalid(githubName) == 0:
         request.session['githuberr'] = 'not valid Github Name'
+        request.session['githubn'] = githubName
+        return HttpResponseRedirect(reverse('profileForm'))
+    if is_githubnameExist(githubName.lower()):
+        request.session['githubexist'] = "The Github username is already exist"
+        request.session['githubn'] = githubName
         return HttpResponseRedirect(reverse('profileForm'))
 
-    course_id = Course.objects.get(pk = c_id)
-    yearlevel_id = YearLevel.objects.get(pk = yl_id)
-    userprof = Profile(userID = user, courseID = course_id, yearID = yearlevel_id,nickname = nickname, githubName = githubName, aboutMe = about)
-    userprof.save()
-    get_score(githubName,user,course_id,yearlevel_id)
-    try:
-        del request.session['githuberr']
-    except KeyError:
-        pass
-    return HttpResponseRedirect(reverse('profileForm'))
+    else:
+        course_id = Course.objects.get(pk = c_id)
+        yearlevel_id = YearLevel.objects.get(pk = yl_id)
+        userprof = Profile(userID = user,nickname = nickname, githubName = githubName.lower(), aboutMe = about)
+        userprof.save()
+        get_score(githubName,user,course_id,yearlevel_id)
+        try:
+            del request.session['githuberr']
+            del request.session['githubexist']
+            del request.session['githubn']
+        except KeyError:
+            pass
+        return HttpResponseRedirect(reverse('profile', args=(str(userprof.githubName),)))
+    
+
+def is_githubvalid(githubName):
+    x = requests.get(f'https://github.com/{githubName}').status_code
+    if x == 200:
+        return True
+    else:
+        return False
+    
+def is_githubnameExist(githubName):
+    if (Profile.objects.filter(githubName = githubName).count() > 0):
+        return True
+    else:
+        return False
     
 
 
-
-
-
-def userProfile(request):
-    return render(request, 'portfolio/profile.html')
+def userProfile(request,gitusername):
+    user = User.objects.get(username = request.user)
+    user_P = LeaderBoards.objects.get(userID = user)
+    
+    return render(request, 'portfolio/profile.html',{
+        'user' : user_P,
+        'gitname' : gitusername
+    })

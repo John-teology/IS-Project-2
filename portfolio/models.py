@@ -22,11 +22,11 @@ class YearLevel(models.Model):
 
 class Profile(models.Model):
     userID = models.ForeignKey(User, on_delete=CASCADE, related_name= 'userProfile' )
-    courseID = models.ForeignKey(Course, on_delete=CASCADE, related_name='profile_Course', null=True )
-    yearID = models.ForeignKey(YearLevel, on_delete=CASCADE, related_name= 'profile_userYearLevel' , null=True)
     nickname = models.CharField(max_length=100, blank=True)
     githubName = models.CharField(max_length=100)
     aboutMe = models.TextField(max_length=300)
+    
+    
 
 
 class LeaderBoards(models.Model):
@@ -132,6 +132,10 @@ class LeaderBoards(models.Model):
     YAML = models.FloatField(default=0,blank=True)
     Yacc = models.FloatField(default=0,blank=True)
     Zig = models.FloatField(default=0,blank=True)
+    
+    
+    def __str__(self):
+        return f"{self.userID}: {self.courseID} and {self.yearID} = {self.overallScore}"
 
 
 
