@@ -1,3 +1,4 @@
+from codecs import ignore_errors
 from email import header
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -61,31 +62,27 @@ def read(request):
 
 
 
-def get_score(name,):
-    # name = 'jaeam17'
-    name = 'John-teology'
-
-    x = requests.get(f'https://api.github.com/users/{name}/repos')
+def get_score(githubName,user,course_id,yearlevel_id):
+    x = requests.get(f'https://api.github.com/users/{githubName}/repos')
     data = x.json()
     prog = []
-    langu = []
+    projects = []
     lang_dict = {}
     for i in range(len(data)):
-        langu.append(data[i]['name'])
+        projects.append(data[i]['name'])
 
-    for la in langu:
-        html_text = requests.get(f'https://github.com/{name}/{la}').content
+    for project in projects:
+        html_text = requests.get(f'https://github.com/{githubName}/{project}').content
         soup = BeautifulSoup(html_text, 'lxml')
-        langs = soup.find_all('a',class_ = 'd-inline-flex flex-items-center flex-nowrap Link--secondary no-underline text-small mr-3')
-        for lang in langs:
+        languages = soup.find_all('a',class_ = 'd-inline-flex flex-items-center flex-nowrap Link--secondary no-underline text-small mr-3')
+        for lang in languages:
             d = lang.find_all('span')
             for a in d:
                 prog.append(a.text.replace("%",""))
-        
-        lang_dict[la] = {prog[i]: prog[i + 1] for i in range(0, len(prog), 2)}
+        # list to dictionary
+        lang_dict[project] = {prog[i]: prog[i + 1] for i in range(0, len(prog), 2)}
         prog[:] = []
-
-
+    # dictionary to dataframe
     df = pd.DataFrame(lang_dict)
     df.index.name = "languages"
     df = df.astype(float)
@@ -96,30 +93,102 @@ def get_score(name,):
 
     into_db = { }
 
-    dat = df['languages']
-
-    for d in dat:
+    for d in df['languages']:
         val = df[df['languages'] == d ]['lang_score']
         into_db[d] = float(val.values)
-        
-    print(into_db)
-    print(df['lang_score'].sum())
+    
+  
 
+    for key in list(into_db.keys()):
+        if key == '1C Enterprise':
+            into_db['CEnterprise'] = into_db.pop(key)
+        if key == 'ASP.NET':
+            into_db['ASPNET'] = into_db.pop(key)
+        if key == 'C#':
+            into_db['CSharp'] = into_db.pop(key)
+        if key == 'C++':
+            into_db['Cplus'] = into_db.pop(key)
+        if key == 'F#':
+            into_db['FSharp'] = into_db.pop(key)
+        if key == 'HTML+RAZOR':
+            into_db['HTML_Razor'] = into_db.pop(key)
+        if key == 'Jupyter Notebook':
+            into_db['JupyterNotebook'] = into_db.pop(key)
+        if key == 'Objective-C':
+            into_db['ObjectiveC'] = into_db.pop(key)
+        if key == 'Objective-C++':
+            into_db['ObjectiveCplus'] = into_db.pop(key)
+        if key == 'OpenEdge ABL':
+            into_db['OpenEdgeABL'] = into_db.pop(key)
+        if key == 'Perl 6':
+            into_db['Perl6'] = into_db.pop(key)
+        if key == 'Protocol Buffer':
+            into_db['ProtocolBuffer'] = into_db.pop(key)
 
-def test(request):
-    input = { 'Python': 100, 'Java' :20, 'CSS':20,"hahah":43}
-    saving(input)
-    return HttpResponse('Success')
+    into_db['userID'] = user
+    into_db['courseID'] = course_id
+    into_db['yearID'] = yearlevel_id
+    into_db['overallScore'] = df['lang_score'].sum()
+
+    saving(into_db)
+
     
     
-# def saving(input):
-#     import re
-#     try:
-#         d = Leadtest(name = 'cd', **input)
-#         d.save()
+def saving(input):
+    import re
+    try:
+        d = LeaderBoards(**input)
+        d.save()
         
-#     except TypeError as e:
-#         s = str(e)
-#         result = re.search("'(.*)'", s)
-#         del input[result.group(1)]
-#         saving(input)
+    except TypeError as e:
+        s = str(e)
+        result = re.search("'(.*)'", s)
+        del input[result.group(1)]
+        saving(input)
+
+
+@login_required
+def profileForm(request):
+    yearlev = YearLevel.objects.all()
+    course = Course.objects.all()
+
+    return render(request,"portfolio/userForm.html",{
+        'yearlevels': yearlev,
+        'courses' : course,
+    })
+
+def formValidation(request):
+    user = request.user
+    if request.method == "POST":
+        c_id = request.POST['courseid']
+        yl_id = request.POST['yearlevelid']
+        nickname = request.POST['nickname']
+        githubName = request.POST['github']
+        about = request.POST['aboutMe']
+    if is_githubvalid(githubName) == 0:
+        request.session['githuberr'] = 'not valid Github Name'
+        return HttpResponseRedirect(reverse('profileForm'))
+
+    course_id = Course.objects.get(pk = c_id)
+    yearlevel_id = YearLevel.objects.get(pk = yl_id)
+    userprof = Profile(userID = user, courseID = course_id, yearID = yearlevel_id,nickname = nickname, githubName = githubName, aboutMe = about)
+    userprof.save()
+    get_score(githubName,user,course_id,yearlevel_id)
+    try:
+        del request.session['githuberr']
+    except KeyError:
+        pass
+    return HttpResponseRedirect(reverse('profileForm'))
+
+
+def is_githubvalid(githubName):
+    x = requests.get(f'https://github.com/{githubName}').status_code
+    if x == 200:
+        return True
+    else:
+        return False
+
+
+
+def userProfile(request):
+    return render(request, 'portfolio/profile.html')
