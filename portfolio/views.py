@@ -12,6 +12,7 @@ from allauth.socialaccount.models import SocialAccount
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import re
 
 from .models import *
 
@@ -130,21 +131,26 @@ def get_score(githubName,user,course_id,yearlevel_id):
     into_db['yearID'] = yearlevel_id
     into_db['overallScore'] = df['lang_score'].sum()
 
-    saving(into_db)
+    saving(into_db,user)
 
     
     
-def saving(input):
-    import re
+def saving(input,user):
     try:
-        d = LeaderBoards(**input)
-        d.save()
+        if (LeaderBoards.objects.filter(userID=user).count() > 0):
+            LeaderBoards.objects.get(userID=user).delete()
+            newlead = LeaderBoards(**input)
+            newlead.save()
+
+        else:
+            d = LeaderBoards(**input)
+            d.save()
         
     except TypeError as e:
         s = str(e)
         result = re.search("'(.*)'", s)
         del input[result.group(1)]
-        saving(input)
+        saving(input,user)
 
 
 @login_required
@@ -156,6 +162,13 @@ def profileForm(request):
         'yearlevels': yearlev,
         'courses' : course,
     })
+
+def is_githubvalid(githubName):
+    x = requests.get(f'https://github.com/{githubName}').status_code
+    if x == 200:
+        return True
+    else:
+        return False
 
 def formValidation(request):
     user = request.user
@@ -179,14 +192,9 @@ def formValidation(request):
     except KeyError:
         pass
     return HttpResponseRedirect(reverse('profileForm'))
+    
 
 
-def is_githubvalid(githubName):
-    x = requests.get(f'https://github.com/{githubName}').status_code
-    if x == 200:
-        return True
-    else:
-        return False
 
 
 
