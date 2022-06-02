@@ -15,7 +15,9 @@ import re
 from .models import *
 
 
-# Create your views here.
+# Create your views here
+
+
 nameProb = {
     '1C Enterprise' : 'CEnterprise',
     'ASP.NET' : 'ASPNET',
@@ -31,48 +33,15 @@ nameProb = {
     'Protocol Buffer':'ProtocolBuffer',
 }
 
-
 def index(request):
     return render(request, "portfolio/index.html")
 
-
-
 def leader(request):
     return render(request, "portfolio/leaderboards.html")
-
-    
+  
 
 # https://avatars.githubusercontent.com/John-teology github profile image hehe
-def read(request): 
-    try:
-        prog = []
-        x = requests.get('https://api.github.com/users/John-teology/repos')
-        data = x.json()
-        langu = []
-        for i in range(len(data)):
-            langu.append(data[i]['name'])
-
-        for la in langu:
-            html_text = requests.get(f'https://github.com/John-teology/{la}').content
-            soup = BeautifulSoup(html_text, 'lxml')
-            langs = soup.find_all('a',class_ = 'd-inline-flex flex-items-center flex-nowrap Link--secondary no-underline text-small mr-3')
-            for lang in langs:
-                d = lang.find_all('span')
-                for a in d:
-                    prog.append(a.text)
-    
-
-        return render(request, "portfolio/read.html", {
-            'data' : prog
-        })
-    except KeyError:
-        return render(request, "portfolio/read.html", {
-            "msg": "try again later"
-        })
-
-
-
-def get_score(githubName,user,course_id,yearlevel_id):
+def webscrp(githubName):
     x = requests.get(f'https://api.github.com/users/{githubName}/repos')
     data = x.json()
     prog = []
@@ -100,6 +69,13 @@ def get_score(githubName,user,course_id,yearlevel_id):
     df = df.fillna(0)
     df['lang_score'] = df.sum(axis=1, numeric_only=True)
 
+    
+    return df
+
+
+
+def get_score(githubName,user,course_id,yearlevel_id):
+    df = webscrp(githubName)
     into_db = { }
     for d in df['languages']:
         val = df[df['languages'] == d ]['lang_score']
@@ -116,7 +92,6 @@ def get_score(githubName,user,course_id,yearlevel_id):
     into_db['overallScore'] = df['lang_score'].sum()
 
     saving_score(into_db,user)
-
     
     
 def saving_score(input,user):
@@ -172,13 +147,14 @@ def formValidation(request):
         userprof = Profile(userID = user,nickname = nickname, githubName = githubName.lower(), aboutMe = about)
         userprof.save()
         get_score(githubName,user,course_id,yearlevel_id)
+        
         try:
             del request.session['githuberr']
             del request.session['githubexist']
             del request.session['githubn']
         except KeyError:
             pass
-        return HttpResponseRedirect(reverse('profile', args=(str(userprof.githubName),)))
+        return HttpResponseRedirect(reverse('profile', args=(githubName,)))
     
 
 def is_githubvalid(githubName):
@@ -197,54 +173,32 @@ def is_githubnameExist(githubName):
 
 
 def userProfile(request,gitusername):
-    
     profile = Profile.objects.get(githubName = gitusername)
     d = profile.userID
     user = User.objects.get(username = d)
     user_P = LeaderBoards.objects.get(userID = d)
     lang_percentage = get_lang_rank(gitusername)
+    rank = get_overall_rank(gitusername)
     return render(request, 'portfolio/profile.html',{
         'leader' : user_P,
         'gitname' : gitusername,
         'user': user,
-        'profile' : profile,
+        'profile' : profile, 
         'p' : lang_percentage,
-        'rank' : get_overall_rank(gitusername)
+        'rank' : rank
         
     })
 
 def get_lang_rank(githubName):
-    x = requests.get(f'https://api.github.com/users/{githubName}/repos')
-    data = x.json()
-    prog = []
-    projects = []
-    lang_dict= {}
-    lang_percentage = {}
+    df = webscrp(githubName)
     ranking = {}
-    for i in range(len(data)):
-        projects.append(data[i]['name'])
-
-    for project in projects:
-        html_text = requests.get(f'https://github.com/{githubName}/{project}').content
-        soup = BeautifulSoup(html_text, 'lxml')
-        languages = soup.find_all('a',class_ = 'd-inline-flex flex-items-center flex-nowrap Link--secondary no-underline text-small mr-3')
-        for lang in languages:
-            d = lang.find_all('span')
-            for a in d:
-                prog.append(a.text.replace("%",""))
-        lang_dict[project] = {prog[i]: prog[i + 1] for i in range(0, len(prog), 2)}
-        prog[:] = []
-    df = pd.DataFrame(lang_dict)
-    df.index.name = "languages"
-    df = df.astype(float)
-    df = df.reset_index(level=0)    
-    profile = Profile.objects.get(githubName = githubName)
+    lang_percentage= {}
+    profile = Profile.objects.get( githubName = githubName)
     user = profile.userID
     laad =  list(df['languages'])
-    for key,value in nameProb.items():
+    for key,value in nameProb.items(): #for naming convention
         l = list(map(lambda x: x.replace(key, value), laad))
     for lang in l:
-        # name convention
         rank = 1
         try: 
             p = list(LeaderBoards.objects.order_by("-"+lang))
@@ -269,7 +223,6 @@ def get_overall_rank(githubName):
     return ranking[user]
 
 
-# def saving_rank()
 
 
 def refresh(request,githubname):
@@ -282,3 +235,7 @@ def refresh(request,githubname):
         get_score(githubname,user,course_id,yearlevel_id)
 
     return HttpResponseRedirect(reverse('profile', args=(githubname,)))
+
+
+
+

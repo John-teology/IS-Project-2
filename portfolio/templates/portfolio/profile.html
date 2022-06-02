@@ -14,9 +14,10 @@
 <h1>year: {{leader.yearID}}</h1>
 <h1>email: {{user.email}}</h1>
 <h1>nickname: {{profile.nickname}}</h1>
-<h1>{{p}}</h1>
+{% for key,value in p.items %}
+<h1>{{key}} : {{value}}</h1>
+{% endfor %}
 
-<h1>{{s}}</h1>
 
 <form action="{% url 'refresh' gitname %}" method="post">
     {% csrf_token %}
@@ -27,7 +28,7 @@
 
 
 
-<!-- <img src="https://icon-widget.codersrank.io/api/MATLAB" alt="JavaScript"> -->
+<img src="https://icon-widget.codersrank.io/api/java" alt="JavaScript">
 
 <br>
 <h1>overall score = {{leader.overallScore}}</h1>

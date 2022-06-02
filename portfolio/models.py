@@ -243,7 +243,8 @@ class Ranks(models.Model):
     YAML = models.IntegerField(default=0,blank=True)
     Yacc = models.IntegerField(default=0,blank=True)
     Zig = models.IntegerField(default=0,blank=True)
-
+def __str__(self):
+        return f"{self.githubName} : {self.overallrank}"
 
 
 
