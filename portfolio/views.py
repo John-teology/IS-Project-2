@@ -16,6 +16,21 @@ from .models import *
 
 
 # Create your views here.
+nameProb = {
+    '1C Enterprise' : 'CEnterprise',
+    'ASP.NET' : 'ASPNET',
+    'C#':'CSharp',
+    'C++':'Cplus',
+    'F#':'FSharp',
+    'HTML+RAZOR':'HTML_Razor',
+    'Jupyter Notebook':'JupyterNotebook',
+    'Objective-C':'ObjectiveC',
+    'Objective-C++':'ObjectiveCplus',
+    'OpenEdge ABL':'OpenEdgeABL',
+    'Perl 6':'Perl6',
+    'Protocol Buffer':'ProtocolBuffer',
+}
+
 
 def index(request):
     return render(request, "portfolio/index.html")
@@ -57,10 +72,6 @@ def read(request):
 
 
 
-
-
-
-
 def get_score(githubName,user,course_id,yearlevel_id):
     x = requests.get(f'https://api.github.com/users/{githubName}/repos')
     data = x.json()
@@ -89,66 +100,39 @@ def get_score(githubName,user,course_id,yearlevel_id):
     df = df.fillna(0)
     df['lang_score'] = df.sum(axis=1, numeric_only=True)
 
-
     into_db = { }
-
     for d in df['languages']:
         val = df[df['languages'] == d ]['lang_score']
         into_db[d] = float(val.values)
-    
-  
 
-    for key in list(into_db.keys()):
-        if key == '1C Enterprise':
-            into_db['CEnterprise'] = into_db.pop(key)
-        if key == 'ASP.NET':
-            into_db['ASPNET'] = into_db.pop(key)
-        if key == 'C#':
-            into_db['CSharp'] = into_db.pop(key)
-        if key == 'C++':
-            into_db['Cplus'] = into_db.pop(key)
-        if key == 'F#':
-            into_db['FSharp'] = into_db.pop(key)
-        if key == 'HTML+RAZOR':
-            into_db['HTML_Razor'] = into_db.pop(key)
-        if key == 'Jupyter Notebook':
-            into_db['JupyterNotebook'] = into_db.pop(key)
-        if key == 'Objective-C':
-            into_db['ObjectiveC'] = into_db.pop(key)
-        if key == 'Objective-C++':
-            into_db['ObjectiveCplus'] = into_db.pop(key)
-        if key == 'OpenEdge ABL':
-            into_db['OpenEdgeABL'] = into_db.pop(key)
-        if key == 'Perl 6':
-            into_db['Perl6'] = into_db.pop(key)
-        if key == 'Protocol Buffer':
-            into_db['ProtocolBuffer'] = into_db.pop(key)
+    for keys in list(into_db.keys()):
+        for key,value in nameProb.items():
+            if keys == key:
+                into_db[value] = into_db.pop(keys)
 
     into_db['userID'] = user
     into_db['courseID'] = course_id
     into_db['yearID'] = yearlevel_id
     into_db['overallScore'] = df['lang_score'].sum()
 
-    saving(into_db,user)
+    saving_score(into_db,user)
 
     
     
-def saving(input,user):
+def saving_score(input,user):
     try:
         if (LeaderBoards.objects.filter(userID=user).count() > 0):
             LeaderBoards.objects.get(userID=user).delete()
             newlead = LeaderBoards(**input)
             newlead.save()
-
         else:
             d = LeaderBoards(**input)
             d.save()
-        
     except TypeError as e:
         s = str(e)
         result = re.search("'(.*)'", s)
         del input[result.group(1)]
-        saving(input,user)
+        saving_score(input,user)
 
 
 @login_required
@@ -255,15 +239,19 @@ def get_lang_rank(githubName):
     df = df.astype(float)
     df = df.reset_index(level=0)    
     profile = Profile.objects.get(githubName = githubName)
-    d = profile.userID
-    for lang in list(df['languages']):
+    user = profile.userID
+    laad =  list(df['languages'])
+    for key,value in nameProb.items():
+        l = list(map(lambda x: x.replace(key, value), laad))
+    for lang in l:
+        # name convention
         rank = 1
         try: 
             p = list(LeaderBoards.objects.order_by("-"+lang))
             for i in p:
                 ranking[i.userID] = rank
                 rank +=1
-            lang_percentage[lang] = ranking[d]
+            lang_percentage[lang] = ranking[user]
         except FieldError:
             pass
     return lang_percentage
@@ -271,11 +259,26 @@ def get_lang_rank(githubName):
 
 def get_overall_rank(githubName):
     profile = Profile.objects.get(githubName = githubName)
-    d = profile.userID
+    user = profile.userID
     ranking = {}
     rank = 1
     p = list(LeaderBoards.objects.order_by("-overallScore"))
     for i in p:
         ranking[i.userID] = rank
         rank +=1
-    return ranking[d]
+    return ranking[user]
+
+
+# def saving_rank()
+
+
+def refresh(request,githubname):
+    profile = Profile.objects.get(githubName = githubname)
+    user = profile.userID
+    lead = LeaderBoards.objects.get(userID = user)
+    course_id = lead.courseID
+    yearlevel_id = lead.yearID
+    if request.POST['refresh']:
+        get_score(githubname,user,course_id,yearlevel_id)
+
+    return HttpResponseRedirect(reverse('profile', args=(githubname,)))

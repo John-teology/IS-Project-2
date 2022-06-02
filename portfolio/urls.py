@@ -11,6 +11,7 @@ urlpatterns = [
     path('profileform/', views.profileForm, name='profileForm'),
     path('formvalidation/', views.formValidation, name='checkform'),
     path('profile/<str:gitusername>', views.userProfile, name='profile'),
+    path('refresh/<str:githubname>', views.refresh, name='refresh'),
 
     
 ]

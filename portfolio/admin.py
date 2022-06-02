@@ -8,4 +8,5 @@ admin.site.register(Profile)
 admin.site.register(LeaderBoards)
 admin.site.register(YearLevel)
 admin.site.register(Course)
+admin.site.register(Ranks)
 
