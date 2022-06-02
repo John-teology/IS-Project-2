@@ -1,9 +1,7 @@
-from codecs import ignore_errors
-from email import header
+from django.core.exceptions import FieldError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect 
 from django.shortcuts import render
 from django.urls import reverse 
@@ -168,8 +166,6 @@ def profileForm(request):
     })
 
 def formValidation(request):
-    
-    
     user = request.user
     if request.method == "POST":
         c_id = request.POST['courseid']
@@ -217,10 +213,69 @@ def is_githubnameExist(githubName):
 
 
 def userProfile(request,gitusername):
-    user = User.objects.get(username = request.user)
-    user_P = LeaderBoards.objects.get(userID = user)
     
+    profile = Profile.objects.get(githubName = gitusername)
+    d = profile.userID
+    user = User.objects.get(username = d)
+    user_P = LeaderBoards.objects.get(userID = d)
+    lang_percentage = get_lang_rank(gitusername)
     return render(request, 'portfolio/profile.html',{
-        'user' : user_P,
-        'gitname' : gitusername
+        'leader' : user_P,
+        'gitname' : gitusername,
+        'user': user,
+        'profile' : profile,
+        'p' : lang_percentage,
+        'rank' : get_overall_rank(gitusername)
+        
     })
+
+def get_lang_rank(githubName):
+    x = requests.get(f'https://api.github.com/users/{githubName}/repos')
+    data = x.json()
+    prog = []
+    projects = []
+    lang_dict= {}
+    lang_percentage = {}
+    ranking = {}
+    for i in range(len(data)):
+        projects.append(data[i]['name'])
+
+    for project in projects:
+        html_text = requests.get(f'https://github.com/{githubName}/{project}').content
+        soup = BeautifulSoup(html_text, 'lxml')
+        languages = soup.find_all('a',class_ = 'd-inline-flex flex-items-center flex-nowrap Link--secondary no-underline text-small mr-3')
+        for lang in languages:
+            d = lang.find_all('span')
+            for a in d:
+                prog.append(a.text.replace("%",""))
+        lang_dict[project] = {prog[i]: prog[i + 1] for i in range(0, len(prog), 2)}
+        prog[:] = []
+    df = pd.DataFrame(lang_dict)
+    df.index.name = "languages"
+    df = df.astype(float)
+    df = df.reset_index(level=0)    
+    profile = Profile.objects.get(githubName = githubName)
+    d = profile.userID
+    for lang in list(df['languages']):
+        rank = 1
+        try: 
+            p = list(LeaderBoards.objects.order_by("-"+lang))
+            for i in p:
+                ranking[i.userID] = rank
+                rank +=1
+            lang_percentage[lang] = ranking[d]
+        except FieldError:
+            pass
+    return lang_percentage
+
+
+def get_overall_rank(githubName):
+    profile = Profile.objects.get(githubName = githubName)
+    d = profile.userID
+    ranking = {}
+    rank = 1
+    p = list(LeaderBoards.objects.order_by("-overallScore"))
+    for i in p:
+        ranking[i.userID] = rank
+        rank +=1
+    return ranking[d]

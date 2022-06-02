@@ -25,6 +25,9 @@ class Profile(models.Model):
     nickname = models.CharField(max_length=100, blank=True)
     githubName = models.CharField(max_length=100)
     aboutMe = models.TextField(max_length=300)
+
+    def __str__(self):
+        return f"{self.githubName}"
     
     
 

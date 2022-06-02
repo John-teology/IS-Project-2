@@ -10,7 +10,7 @@ urlpatterns = [
     path('read/', views.read, name='read'),
     path('profileform/', views.profileForm, name='profileForm'),
     path('formvalidation/', views.formValidation, name='checkform'),
-    path('myprofile/<str:gitusername>', views.userProfile, name='profile'),
+    path('profile/<str:gitusername>', views.userProfile, name='profile'),
 
     
 ]
