@@ -278,7 +278,7 @@ def refresh(request,githubname):
     lead = LeaderBoards.objects.get(userID = user)
     course_id = lead.courseID
     yearlevel_id = lead.yearID
-    if request.POST['refresh']:
+    if request.method == 'POST':
         get_score(githubname,user,course_id,yearlevel_id)
 
     return HttpResponseRedirect(reverse('profile', args=(githubname,)))
