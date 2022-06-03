@@ -41,7 +41,7 @@ def leader(request):
   
 
 # https://avatars.githubusercontent.com/John-teology github profile image hehe
-def webscrp(githubName):
+def webscrp(githubName,option=""):
     x = requests.get(f'https://api.github.com/users/{githubName}/repos')
     data = x.json()
     prog = []
@@ -69,8 +69,11 @@ def webscrp(githubName):
     df = df.fillna(0)
     df['lang_score'] = df.sum(axis=1, numeric_only=True)
 
+    if option == "lang_dict":
+        return lang_dict
+    else:    
+        return df
     
-    return df
 
 
 
@@ -179,13 +182,15 @@ def userProfile(request,gitusername):
     user_P = LeaderBoards.objects.get(userID = d)
     lang_percentage = get_lang_rank(gitusername)
     rank = get_overall_rank(gitusername)
+    repos = webscrp(gitusername,'lang_dict')
     return render(request, 'portfolio/profile.html',{
         'leader' : user_P,
         'gitname' : gitusername,
         'user': user,
         'profile' : profile, 
         'p' : lang_percentage,
-        'rank' : rank
+        'rank' : rank,
+        'repos' : repos
         
     })
 

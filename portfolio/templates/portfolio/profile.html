@@ -17,6 +17,9 @@
 {% for key,value in p.items %}
 <h1>{{key}} : {{value}}</h1>
 {% endfor %}
+{% for key,val in repos.items %}
+<h5>{{key}} : {{val}}</h5>
+{% endfor %}
 
 
 <form action="{% url 'refresh' gitname %}" method="post">
