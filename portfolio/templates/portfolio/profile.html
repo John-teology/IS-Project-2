@@ -1,4 +1,4 @@
-{% extends "portfolio/layout.html" %} {% load static %} {% block body %}
+{% extends "portfolio/layout.html" %} {% load static %} {% block body %} {% load getattribute %}
 
 
 
@@ -14,9 +14,11 @@
 <h1>year: {{leader.yearID}}</h1>
 <h1>email: {{user.email}}</h1>
 <h1>nickname: {{profile.nickname}}</h1>
+
 {% for key,value in p.items %}
-<h1>{{key}} : {{value}}</h1>
+<h1>{{key}} : {{value}} : {{leader|getattribute:key|floatformat:2}}</h1>
 {% endfor %}
+
 {% for key,val in repos.items %}
 <h5>{{key}} : {{val}}</h5>
 {% endfor %}

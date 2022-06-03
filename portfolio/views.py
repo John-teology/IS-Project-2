@@ -273,7 +273,7 @@ def userProfile(request,gitusername):
     d = profile.userID
     user = User.objects.get(username = d)
     user_P = LeaderBoards.objects.get(userID = d)
-    lang_percentage = get_lang_rank(gitusername)
+    lang_rank = get_lang_rank(gitusername)
     rank = get_overall_rank(gitusername)
     repos = webscrp(gitusername,'lang_dict')
     return render(request, 'portfolio/profile.html',{
@@ -281,7 +281,7 @@ def userProfile(request,gitusername):
         'gitname' : gitusername,
         'user': user,
         'profile' : profile, 
-        'p' : lang_percentage,
+        'p' : lang_rank,
         'rank' : rank,
         'repos' : repos
         
