@@ -33,12 +33,105 @@ nameProb = {
     'Protocol Buffer':'ProtocolBuffer',
 }
 
+languages = [ '1C Enterprise','ASP.NET','ActionScript','Apex','Assembly','Ballerina',
+'Batchfile',
+'Blazor',
+'C',
+'C#',
+'C++',
+'COBOL',
+'CSS',
+'Clojure',
+'CoffeeScript',
+'Crystal',
+'Cucumber',
+'Dart',
+'Delphi',
+'Dockerfile',
+'EJS',
+'EPP',
+'ERB',
+'Ebuild',
+'Elixir',
+'Elm',
+'Erlang',
+'F#',
+'Fortran',
+'Go',
+'Groovy',
+'HCL',
+'HTML',
+'HTML+Razor',
+'Haskell',
+'Haxe',
+'HiveQL',
+'JSON',
+'Java',
+'JavaScript',
+'Julia',
+'Jupyter Notebook',
+'Kivy',
+'Kotlin',
+'LabVIEW',
+'Less',
+'Lex',
+'Limbo',
+'Liquid',
+'Lua',
+'M',
+'MATLAB',
+'Makefile',
+'Mathematica',
+'Mercury',
+'Nginx',
+'Nix',
+'Objective-C',
+'Objective-C++',
+'OpenEdge ABL',
+'PHP',
+'PLSQL',
+'PLpgSQL',
+'Perl',
+'Perl 6',
+'PowerBuilder',
+'Powershell',
+'Prolog',
+'Protocol Buffer',
+'Puppet',
+'Python',
+'QML',
+'R',
+'Raku',
+'Robot',
+'Ruby',
+'Rust',
+'SASS',
+'SCSS',
+'SQL',
+'SQLPL',
+'Scala',
+'Shell',
+'Smalltalk',
+'Solidity',
+'Stata',
+'Stylus',
+'Svelte',
+'Swift',
+'TSQL',
+'TypeScript',
+'Vue',
+'XML',
+'Xtend',
+'Xtext',
+'YAML',
+'Yacc',
+'Zig',
+
+]
+
 def index(request):
     return render(request, "portfolio/index.html")
 
-def leader(request):
-    return render(request, "portfolio/leaderboards.html")
-  
 
 # https://avatars.githubusercontent.com/John-teology github profile image hehe
 def webscrp(githubName,option=""):
@@ -241,6 +334,57 @@ def refresh(request,githubname):
 
     return HttpResponseRedirect(reverse('profile', args=(githubname,)))
 
+
+def leaderboard(request):
+    course = Course.objects.all()
+    year = YearLevel.objects.all()
+    by_what = '-overallScore'
+    d = {}
+    select1 = 'Select your course'
+    select2 = 'Select your Year Level'
+    select3 = 'Languages'
+    if request.method == 'POST':
+        lang = 'overallScore'
+        if request.POST.get('courseid'):
+            c_id = request.POST['courseid']
+            c = Course.objects.get(pk = c_id)
+            d['courseID'] = c
+            select1 = c
+
+        if request.POST.get('yearlevelid'):
+            y_id = request.POST['yearlevelid']
+            date = YearLevel.objects.get(pk = y_id)
+            d['yearID'] = date
+            select2 = date
+
+        if request.POST.get('languages'):
+            lang = request.POST['languages']
+            select3 = request.POST['languages']
+        try:
+            data = LeaderBoards.objects.filter(**d).order_by('-' +lang)
+        except FieldError:
+            lang = nameProb[lang]
+            data = LeaderBoards.objects.filter(**d).order_by('-' +lang)
+
+    else:
+        lang = ''
+        data= LeaderBoards.objects.order_by(by_what)
+        
+    return render(request,'portfolio/leaderboards.html',{
+        'courses': course,
+        'yearlevels':year,
+        'languages': languages,
+        'data' : data,
+        'select1': select1,
+        'select2': select2,
+        'select3': select3,
+        'lang' : lang,
+    })
+
+def redirect(request,userid):
+    p = Profile.objects.get(userID = userid)
+
+    return HttpResponseRedirect(reverse('profile',args=(p.githubName,)))
 
 
 

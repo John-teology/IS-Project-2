@@ -1,5 +1,4 @@
-{% load static %}
-
+{% load static %} {% load getattribute %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,9 +6,47 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link href="{% static 'portfolio/index.css' %}" rel="stylesheet" />
   </head>
   <body>
-    <h1>LEaderBOards</h1>
+    <form action="{% url 'leaderboard' %}" method="post">
+      {% csrf_token %}
+
+      <select name="courseid" id="">
+        <option value="" disabled selected>{{select1}}</option>
+        {% for course in courses %}
+        <option value="{{course.id}}">{{course}}</option>
+        {% endfor %}
+      </select>
+      <select name="yearlevelid" id="">
+        <option value="" disabled selected>{{select2}}</option>
+        {% for yearlevel in yearlevels %}
+        <option value="{{yearlevel.id}}">{{yearlevel}}</option>
+        {% endfor %}
+      </select>
+      <select name="languages" id="">
+        <option value="" disabled selected>{{select3}}</option>
+        {% for lang in languages %}
+        <option value="{{lang}}">{{lang}}</option>
+        {% endfor %}
+      </select>
+      <input type="submit" value="Submit">
+    </form>
+
+    <h1>{{test}}</h1>
+    {% if lang != '' %}
+    {% for d in data %}
+    <a href="{% url 'redirect' d.userID.id %}">
+      <h1>{{d.userID}} | {{d.courseID}} | {{d.yearID}} | {{ d|getattribute:lang|floatformat:2 }}</h1>
+    </a>
+    {% endfor %}
+    
+    {% else %}
+    {% for d in data %}
+    <a href="{% url 'redirect' d.userID.id %}">
+      <h1>{{d.userID}} | {{d.courseID}} | {{d.yearID}} | {{d.overallScore}}</h1>
+    </a>
+    {% endfor %}
+
+    {% endif %}
   </body>
 </html>

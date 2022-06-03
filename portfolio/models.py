@@ -1,4 +1,5 @@
 from turtle import ondrag
+from unicodedata import decimal
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.deletion import CASCADE
@@ -139,7 +140,7 @@ class LeaderBoards(models.Model):
     
     
     def __str__(self):
-        return f"{self.userID}: {self.courseID} and {self.yearID} = {self.overallScore}"
+        return f"ID: {self.id}-{self.userID}: {self.courseID} and {self.yearID} = {self.overallScore}"
 
 
 
@@ -204,7 +205,6 @@ M
 MATLAB
 Makefile
 Mathematica
-Matlab
 Mercury
 Nginx
 Nix
