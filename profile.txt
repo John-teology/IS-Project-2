@@ -1,0 +1,38 @@
+
+<img src="https://ghchart.rshah.org/781402/{{gitname}}" alt="2016rshah's Blue Github chart" />
+<br>
+
+
+<img src="https://avatars.githubusercontent.com/{{gitname}}" alt="profilepic" />
+
+<br>
+<h1>course :{{leader.courseID}}</h1>
+<h1>year: {{leader.yearID}}</h1>
+<h1>email: {{user.email}}</h1>
+<h1>nickname: {{profile.nickname}}</h1>
+
+{% for key,value in p.items %}
+<h1>{{key}} : {{value}} : {{leader|getattribute:key|floatformat:2}}</h1>
+{% endfor %}
+
+{% for key,val in repos.items %}
+<h5>{{key}} : {{val}}</h5>
+{% endfor %}
+
+
+<form action="{% url 'refresh' gitname %}" method="post">
+    {% csrf_token %}
+    <button name="refresh">Update</button>
+</form>
+
+
+
+
+
+<img src="https://icon-widget.codersrank.io/api/Github" alt="JavaScript">
+
+<br>
+<h1>overall score = {{leader.overallScore}}</h1>
+<h1>overall rank = {{rank}}</h1>
+
+
