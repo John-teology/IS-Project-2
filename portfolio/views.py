@@ -14,6 +14,7 @@ import pandas as pd
 import re
 
 
+
 from .models import *
 
 
@@ -274,7 +275,19 @@ def is_githubnameExist(githubName):
     else:
         return False
     
+def ploot():
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    #define data
+    data = [15, 25, 25, 30, 5]
+    labels = ['Group 1', 'Group 2', 'Group 3', 'Group 4', 'Group 5']
 
+    #define Seaborn color palette to use
+    colors = sns.color_palette('pastel')[0:5]
+
+    #create pie chart
+    plot = plt.pie(data, labels = labels, colors = colors, autopct='%.0f%%')
+    return plot
 
 def userProfile(request,gitusername):
     profile = Profile.objects.get(githubName = gitusername.lower())
@@ -284,6 +297,7 @@ def userProfile(request,gitusername):
     lang_rank = get_lang_rank(gitusername.lower())
     rank = get_overall_rank(gitusername.lower())
     repos = webscrp(gitusername,'lang_dict')
+    plot = ploot()
     return render(request, 'portfolio/profile.html',{
         'leader' : user_P,
         'gitname' : gitusername,
@@ -293,6 +307,7 @@ def userProfile(request,gitusername):
         'rank' : rank,
         'repos' : repos,
         'dict': nameProb,
+        'plot' : plot
         
     })
 
