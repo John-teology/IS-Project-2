@@ -20,7 +20,6 @@ class YearLevel(models.Model):
     def __str__(self):
         return f"{self.yearLevel}"
 
-
 class Profile(models.Model):
     userID = models.ForeignKey(User, on_delete=CASCADE, related_name= 'userProfile' )
     nickname = models.CharField(max_length=100, blank=True)
@@ -29,11 +28,10 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.githubName}"
-    
-    
 
 
 class LeaderBoards(models.Model):
+    userProfile = models.ForeignKey(Profile , null=True ,on_delete=CASCADE, related_name='user_leaderboard')
     userID = models.ForeignKey(User, on_delete=CASCADE, related_name= 'userLeaderboard' )
     courseID = models.ForeignKey(Course, on_delete=CASCADE ,related_name='userCourse' , null=True)
     yearID = models.ForeignKey(YearLevel, on_delete=CASCADE,  related_name= 'userYearLevel',null=True )
@@ -141,7 +139,6 @@ class LeaderBoards(models.Model):
     
     def __str__(self):
         return f"ID: {self.id}-{self.userID}: {self.courseID} and {self.yearID} = {self.overallScore}"
-
 
 
 

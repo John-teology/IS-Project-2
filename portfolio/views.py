@@ -1,3 +1,4 @@
+from atexit import register
 from django.core.exceptions import FieldError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -11,6 +12,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
+
 
 from .models import *
 
@@ -129,6 +131,9 @@ languages = [ '1C Enterprise','ASP.NET','ActionScript','Apex','Assembly','Baller
 
 ]
 
+
+
+
 def index(request):
     return render(request, "portfolio/index.html")
 
@@ -170,7 +175,7 @@ def webscrp(githubName,option=""):
 
 
 
-def get_score(githubName,user,course_id,yearlevel_id):
+def get_score(githubName,user,course_id,yearlevel_id,userprof):
     df = webscrp(githubName)
     into_db = { }
     for d in df['languages']:
@@ -185,6 +190,7 @@ def get_score(githubName,user,course_id,yearlevel_id):
     into_db['userID'] = user
     into_db['courseID'] = course_id
     into_db['yearID'] = yearlevel_id
+    into_db['userProfile'] = userprof
     into_db['overallScore'] = df['lang_score'].sum()
 
     saving_score(into_db,user)
@@ -196,9 +202,11 @@ def saving_score(input,user):
             LeaderBoards.objects.get(userID=user).delete()
             newlead = LeaderBoards(**input)
             newlead.save()
+           
         else:
             d = LeaderBoards(**input)
             d.save()
+           
     except TypeError as e:
         s = str(e)
         result = re.search("'(.*)'", s)
@@ -242,7 +250,7 @@ def formValidation(request):
         yearlevel_id = YearLevel.objects.get(pk = yl_id)
         userprof = Profile(userID = user,nickname = nickname, githubName = githubName.lower(), aboutMe = about)
         userprof.save()
-        get_score(githubName,user,course_id,yearlevel_id)
+        get_score(githubName,user,course_id,yearlevel_id,userprof)
         
         try:
             del request.session['githuberr']
@@ -250,7 +258,7 @@ def formValidation(request):
             del request.session['githubn']
         except KeyError:
             pass
-        return HttpResponseRedirect(reverse('profile', args=(githubName,)))
+        return HttpResponseRedirect(reverse('profile', args=(githubName.lower(),)))
     
 
 def is_githubvalid(githubName):
@@ -261,7 +269,7 @@ def is_githubvalid(githubName):
         return False
     
 def is_githubnameExist(githubName):
-    if (Profile.objects.filter(githubName = githubName).count() > 0):
+    if (Profile.objects.filter(githubName = githubName.lower()).count() > 0):
         return True
     else:
         return False
@@ -269,12 +277,12 @@ def is_githubnameExist(githubName):
 
 
 def userProfile(request,gitusername):
-    profile = Profile.objects.get(githubName = gitusername)
+    profile = Profile.objects.get(githubName = gitusername.lower())
     d = profile.userID
     user = User.objects.get(username = d)
     user_P = LeaderBoards.objects.get(userID = d)
-    lang_rank = get_lang_rank(gitusername)
-    rank = get_overall_rank(gitusername)
+    lang_rank = get_lang_rank(gitusername.lower())
+    rank = get_overall_rank(gitusername.lower())
     repos = webscrp(gitusername,'lang_dict')
     return render(request, 'portfolio/profile.html',{
         'leader' : user_P,
@@ -283,20 +291,25 @@ def userProfile(request,gitusername):
         'profile' : profile, 
         'p' : lang_rank,
         'rank' : rank,
-        'repos' : repos
+        'repos' : repos,
+        'dict': nameProb,
         
     })
+
+
 
 def get_lang_rank(githubName):
     df = webscrp(githubName)
     ranking = {}
     lang_percentage= {}
-    profile = Profile.objects.get( githubName = githubName)
+    profile = Profile.objects.get( githubName = githubName.lower())
     user = profile.userID
     laad =  list(df['languages'])
-    for key,value in nameProb.items(): #for naming convention
-        l = list(map(lambda x: x.replace(key, value), laad))
-    for lang in l:
+    for i in laad:
+        for key,value in nameProb.items(): #for naming convention
+            if i == key:
+                laad = list(map(lambda x: x.replace(i, value), laad))
+    for lang in laad:
         rank = 1
         try: 
             p = list(LeaderBoards.objects.order_by("-"+lang))
@@ -306,11 +319,12 @@ def get_lang_rank(githubName):
             lang_percentage[lang] = ranking[user]
         except FieldError:
             pass
+    
     return lang_percentage
 
 
 def get_overall_rank(githubName):
-    profile = Profile.objects.get(githubName = githubName)
+    profile = Profile.objects.get(githubName = githubName.lower())
     user = profile.userID
     ranking = {}
     rank = 1
@@ -324,7 +338,7 @@ def get_overall_rank(githubName):
 
 
 def refresh(request,githubname):
-    profile = Profile.objects.get(githubName = githubname)
+    profile = Profile.objects.get(githubName = githubname.lower())
     user = profile.userID
     lead = LeaderBoards.objects.get(userID = user)
     course_id = lead.courseID
@@ -385,6 +399,5 @@ def redirect(request,userid):
     p = Profile.objects.get(userID = userid)
 
     return HttpResponseRedirect(reverse('profile',args=(p.githubName,)))
-
 
 

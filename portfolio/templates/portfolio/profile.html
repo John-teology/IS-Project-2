@@ -1,4 +1,4 @@
-{% load static %} {% load getattribute %}
+{% load static %} {% load getattribute %} {% load custom_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <!--  This file has been downloaded from bootdey.com @bootdey on twitter -->
     <!--  All snippets are MIT license http://bootdey.com/license -->
-    <title>gallery images profile - Bootdey.com</title>
+    <title>Profile</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <link
@@ -34,37 +34,36 @@
               </div>
 
               <div class="">
-                <h4 class="m-b-5">John J. Doe</h4>
-                <p class="text-muted">@johndoe</p>
+                <h4 class="m-b-5">{{user.first_name}}</h4>
+                <p class="text-muted">{{profile.nickname}}</p>
               </div>
 
               <form action="{% url 'refresh' gitname %}" method="post">
                 {% csrf_token %}
                 <button
                   name="refresh"
-                  type="button"
+                  type="submit"
                   class="btn btn-success btn-sm w-sm waves-effect m-t-10 waves-light"
                 >
                   Update
                 </button>
               </form>
 
-
               <div class="text-left m-t-40">
                 <p class="text-muted font-13">
                   <strong>Full Name :</strong>
-                  <span class="m-l-15">Johnathan Deo</span>
-                </p>
-                <p class="text-muted font-13">
-                  <strong>Mobile :</strong
-                  ><span class="m-l-15">(123) 123 1234</span>
+                  <span class="m-l-15">{{user.first_name}}{{user.last_name}}</span>
                 </p>
                 <p class="text-muted font-13">
                   <strong>Email :</strong>
-                  <span class="m-l-15">johndoe@bootdey.com</span>
+                  <span class="m-l-15">{{user.email}}</span>
                 </p>
                 <p class="text-muted font-13">
-                  <strong>Location :</strong> <span class="m-l-15">USA</span>
+                  <strong>Course :</strong
+                  ><span class="m-l-15">{{leader.courseID}}</span>
+                </p>
+                <p class="text-muted font-13">
+                  <strong>Year :</strong> <span class="m-l-15">{{leader.yearID}}</span>
                 </p>
               </div>
 
@@ -150,6 +149,14 @@
 
         <div class="col-md-8 col-lg-9">
           <div class="">
+            <div class="tab-content">
+              <h1>Activity Chart</h1>
+              <img
+                src="https://ghchart.rshah.org/bc1823/{{gitname}}"
+                alt="2016rshah's Blue Github chart"
+                style="padding-bottom: 50px"
+              />
+            </div>
             <div class="">
               <ul class="nav nav-tabs navtab-custom">
                 <li class="">
@@ -183,8 +190,8 @@
                             src="https://icon-widget.codersrank.io/api/Github"
                             class="thumb-img"
                             alt="work-thumbnail"
-                            width="150"
-                            height="150"
+                            width="100"
+                            height="100"
                           />
                         </a>
                         <h4 class="text-center">{{key}}</h4>
@@ -199,25 +206,26 @@
                 </div>
                 <div class="tab-pane active" id="profile">
                   <div class="row">
-                    {% for key,value in p.items %}
-
+                    {% for key,value in p.items %} 
                     <div class="col-sm-4">
                       <div class="gal-detail thumb">
                         <a href="#" class="image-popup" title="Screenshot-2">
                           <img
-                            src="https://icon-widget.codersrank.io/api/{{key}}"
+                            src="https://icon-widget.codersrank.io/api/{% update_variable key %}"
                             class="thumb-img"
                             alt="work-thumbnail"
-                            width="150"
-                            height="150"
+                            width="100"
+                            height="100"
                           />
                         </a>
                         <br />
-                        <h4 class="text-center">{{key}}: TOP {{value}}</h4>
+                        <h4 class="text-center">{% update_variable key %}: TOP {{value}}</h4>
                         <div class="ga-border"></div>
                         <p class="text-muted text-center">
                           <small>
-                            {{leader|getattribute:key|floatformat:2}} Points</small
+                            <!-- Animal.sale_price.field.verbose_name -->
+                            {{leader|getattribute:key|floatformat:2}}
+                            Points</small
                           >
                         </p>
                       </div>
@@ -355,11 +363,11 @@ Loren gypsum dolor sit mate, consecrate disciplining lit, tied diam nonunion nib
         transition: all 0.3s ease-out;
       }
       .portfolioFilter a:hover {
-        background-color: #228bdf;
+        background-color: #bc1823;
         color: #ffffff;
       }
       .portfolioFilter a.current {
-        background-color: #228bdf;
+        background-color: #bc1823;
         color: #ffffff;
       }
       .thumb {
@@ -389,7 +397,7 @@ Loren gypsum dolor sit mate, consecrate disciplining lit, tied diam nonunion nib
       .gal-detail .ga-border {
         height: 3px;
         width: 40px;
-        background-color: #228bdf;
+        background-color: #bc1823;
         margin: 10px auto;
       }
 
@@ -434,7 +442,7 @@ Loren gypsum dolor sit mate, consecrate disciplining lit, tied diam nonunion nib
         font-family: "Roboto", sans-serif;
       }
       .nav.nav-tabs > li > a:hover {
-        color: #228bdf !important;
+        color: #bc1823 !important;
       }
       .nav.tabs-vertical > li > a {
         background-color: transparent;
@@ -447,7 +455,7 @@ Loren gypsum dolor sit mate, consecrate disciplining lit, tied diam nonunion nib
         padding-right: 20px;
       }
       .nav.tabs-vertical > li > a:hover {
-        color: #228bdf !important;
+        color: #bc1823 !important;
       }
       .tab-content {
         box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
@@ -467,21 +475,21 @@ Loren gypsum dolor sit mate, consecrate disciplining lit, tied diam nonunion nib
         border-top: 2px solid transparent !important;
       }
       .navtab-custom li.active a {
-        border-top: 2px solid #228bdf !important;
+        border-top: 2px solid #bc1823 !important;
       }
       .nav-tab-left.navtab-custom li a {
         border: none !important;
         border-left: 2px solid transparent !important;
       }
       .nav-tab-left.navtab-custom li.active a {
-        border-left: 2px solid #228bdf !important;
+        border-left: 2px solid #bc1823 !important;
       }
       .nav-tab-right.navtab-custom li a {
         border: none !important;
         border-right: 2px solid transparent !important;
       }
       .nav-tab-right.navtab-custom li.active a {
-        border-right: 2px solid #228bdf !important;
+        border-right: 2px solid #bc1823 !important;
       }
       .nav-tabs.nav-justified > .active > a,
       .nav-tabs.nav-justified > .active > a:hover,
@@ -495,7 +503,7 @@ Loren gypsum dolor sit mate, consecrate disciplining lit, tied diam nonunion nib
       .tabs-vertical > li.active > a,
       .tabs-vertical > li.active > a:focus,
       .tabs-vertical > li.active > a:hover {
-        color: #228bdf !important;
+        color: #bc1823 !important;
       }
 
       .nav.nav-tabs + .tab-content {
