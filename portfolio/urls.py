@@ -12,7 +12,6 @@ urlpatterns = [
     path('refresh/<str:githubname>', views.refresh, name='refresh'),
     path('leaderboards/',views.leaderboard, name='leaderboard'),
     path('redirect/<int:userid>',views.redirect, name='redirect'),
-
-
+    path('update/<str:gitname>',views.update_profile, name='update'),
     
 ]
