@@ -155,7 +155,7 @@ AUTH_USER_MODEL = 'portfolio.User'
 
 
 LOGIN_REDIRECT_URL = '/profileform'
-LOGOUT_REDIRECT_URL = '/accounts/login'
+LOGOUT_REDIRECT_URL = '/'
 
 
 SOCIAL_AUTH_GITHUB_KEY = '562ca04a25117762c61e'
