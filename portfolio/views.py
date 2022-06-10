@@ -136,7 +136,14 @@ languages = [ '1C Enterprise','ASP.NET','ActionScript','Apex','Assembly','Baller
 
 
 def index(request):
-    return render(request, "portfolio/index.html")
+    if request.user.is_authenticated:
+        user = request.user
+        profile = Profile.objects.get(userID = user)
+        return render(request, "portfolio/index.html",{
+            'user': profile
+        })
+    else:
+        return render(request, "portfolio/index.html")
 
 
 # https://avatars.githubusercontent.com/John-teology github profile image hehe
@@ -280,13 +287,16 @@ def is_githubnameExist(githubName):
 
 
 def userProfile(request,gitusername):
+    if 'lang_rank' + gitusername in request.session:
+        pass
+    else:
+        request.session['lang_rank' + gitusername] = get_lang_rank(gitusername.lower())
+        request.session['get_overall_rank' + gitusername] = get_overall_rank(gitusername.lower())
+        request.session['webscrp' + gitusername] = webscrp(gitusername,'lang_dict')
     profile = Profile.objects.get(githubName = gitusername.lower())
     d = profile.userID
     user = User.objects.get(username = d)
     user_P = LeaderBoards.objects.get(userID = d)
-    lang_rank = get_lang_rank(gitusername.lower())
-    rank = get_overall_rank(gitusername.lower())
-    repos = webscrp(gitusername,'lang_dict')
     course = Course.objects.all()
     year = YearLevel.objects.all()
     return render(request, 'portfolio/profile.html',{
@@ -294,9 +304,9 @@ def userProfile(request,gitusername):
         'gitname' : gitusername,
         'user': user,
         'profile' : profile, 
-        'p' : lang_rank,
-        'rank' : rank,
-        'repos' : repos,
+        'p' : request.session['lang_rank' + gitusername],
+        'rank' : request.session['get_overall_rank' + gitusername],
+        'repos' : request.session['webscrp' + gitusername],
         'dict': nameProb,
         'courses':course,
         'yearlevels' :year
@@ -350,13 +360,14 @@ def refresh(request,githubname):
     lead = LeaderBoards.objects.get(userID = user)
     course_id = lead.courseID
     yearlevel_id = lead.yearID
-    if request.method == 'POST':
-        get_score(githubname,user,course_id,yearlevel_id)
+    get_score(githubname,user,course_id,yearlevel_id,profile)
 
     return HttpResponseRedirect(reverse('profile', args=(githubname,)))
 
 
 def leaderboard(request):
+   
+ 
     course = Course.objects.all()
     year = YearLevel.objects.all()
     by_what = '-overallScore'
@@ -390,17 +401,32 @@ def leaderboard(request):
     else:
         lang = ''
         data= LeaderBoards.objects.order_by(by_what)
-        
-    return render(request,'portfolio/leaderboards.html',{
-        'courses': course,
-        'yearlevels':year,
-        'languages': languages,
-        'data' : data,
-        'select1': select1,
-        'select2': select2,
-        'select3': select3,
-        'lang' : lang,
-    })
+    if request.user.is_authenticated:
+        user = request.user
+        profile = Profile.objects.get(userID = user)    
+        return render(request,'portfolio/leaderboards.html',{
+            'courses': course,
+            'yearlevels':year,
+            'languages': languages,
+            'data' : data,
+            'select1': select1,
+            'select2': select2,
+            'select3': select3,
+            'lang' : lang,
+            'user' : profile
+        })
+    else:
+        return render(request,'portfolio/leaderboards.html',{
+            'courses': course,
+            'yearlevels':year,
+            'languages': languages,
+            'data' : data,
+            'select1': select1,
+            'select2': select2,
+            'select3': select3,
+            'lang' : lang,
+        })
+
 
 def redirect(request,userid):
     p = Profile.objects.get(userID = userid)
