@@ -245,7 +245,7 @@ def formValidation(request):
         githubName = request.POST['github']
         about = request.POST['aboutMe']
     if is_githubvalid(githubName) == 0:
-        request.session['githuberr'] = 'not valid Github Name'
+        request.session['githuberr'] = 'Invalid Github Name'
         request.session['githubn'] = githubName
         return HttpResponseRedirect(reverse('profileForm'))
     if is_githubnameExist(githubName.lower()):
