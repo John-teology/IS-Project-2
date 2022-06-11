@@ -69,19 +69,19 @@
                 style="color: black"
                 >{{request.user.last_name}}</a
               >
-              {% else %}
-              <form action="{% provider_login_url 'google' %}" method="post">
-                {% csrf_token %}
-                <button
-                  type="submit"
-                  class="nav-link"
-                  style="background-color: #bc1823; border: none"
-                >
-                  Login
-                </button>
-              </form>
-              {% endif %}
             </li>
+            {% else %}
+            <form action="{% provider_login_url 'google' %}" method="post">
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="nav-link"
+                style="background-color: #bc1823; border: none; padding-top: 15px;"
+              >
+                Login
+              </button>
+            </form>
+            {% endif %}
           </ul>
         </div>
       </div>
@@ -275,7 +275,12 @@
                     </div>
                     <div class="form-group">
                       <label for="course">Course</label>
-                      <select name="courseid" id="course" class="form-control" style="height: 30px;">
+                      <select
+                        name="courseid"
+                        id="course"
+                        class="form-control"
+                        style="height: 30px"
+                      >
                         <option value="" disabled selected>
                           Select your Course
                         </option>
@@ -286,7 +291,12 @@
                     </div>
                     <div class="form-group">
                       <label for="year">Year Level</label>
-                      <select name="yearlevelid" id="year" class="form-control" style="height: 30px;">
+                      <select
+                        name="yearlevelid"
+                        id="year"
+                        class="form-control"
+                        style="height: 30px"
+                      >
                         <option value="" disabled selected>
                           Select your Year Level
                         </option>
@@ -312,7 +322,11 @@
                       Save
                     </button>
                   </form>
-                  <form method="post" action="/accounts/logout/" style="margin-top: 10px;">
+                  <form
+                    method="post"
+                    action="/accounts/logout/"
+                    style="margin-top: 10px"
+                  >
                     {% csrf_token %}
                     <button class="btn btn-dark" type="submit">Sign Out</button>
                   </form>

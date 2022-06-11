@@ -35,7 +35,7 @@
 
               <div class="form_group">
                 <select name="yearlevelid" id="" class="form-control input-lg"
-                style="margin-bottom: 20px">
+                style="margin-bottom: 20px" required>
                   <option value="" disabled selected>Select your Year Level</option>
                   {% for yearlevel in yearlevels %}
                   <option value="{{yearlevel.id}}">{{yearlevel}}</option>
@@ -44,7 +44,7 @@
               </div>
               <div class="form_group">
                 <select name="courseid" id="" class="form-control input-lg"
-                style="margin-bottom: 20px">
+                style="margin-bottom: 20px" required>
                   <option value="" disabled selected>Select your Course</option>
                   {% for course in courses %}
                   <option value="{{course.id}}">{{course}}</option>
@@ -66,6 +66,7 @@
                   placeholder="Github Name"
                   name="github"
                   value="{{request.session.githubn}}"
+                  required 
                 />
               </div>
               <h4>{{request.session.githuberr}}</h4>

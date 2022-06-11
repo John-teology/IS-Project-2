@@ -1,4 +1,5 @@
 from atexit import register
+from distutils.log import error
 from django.core.exceptions import FieldError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -12,6 +13,8 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
+
+from tenacity import retry
 
 
 
@@ -138,11 +141,16 @@ languages = [ '1C Enterprise','ASP.NET','ActionScript','Apex','Assembly','Baller
 def index(request):
     if request.user.is_authenticated:
         user = request.user
+        try:
+            Profile.objects.get(userID = user)
+        except Profile.DoesNotExist:
+            return HttpResponseRedirect(reverse('profileForm'))
         profile = Profile.objects.get(userID = user)
         return render(request, "portfolio/index.html",{
             'user': profile
-        })
-    else:
+            })
+
+    else:       
         return render(request, "portfolio/index.html")
 
 
@@ -224,6 +232,9 @@ def saving_score(input,user):
 
 @login_required
 def profileForm(request):
+    email = request.user.email
+    if email[-10:] != 'tup.edu.ph':
+        return HttpResponseRedirect(reverse('account_logout'))
     userid = User.objects.get(username = request.user)
     if (Profile.objects.filter(userID = userid).count() > 0):
         p = Profile.objects.get(userID = request.user)
@@ -403,7 +414,12 @@ def leaderboard(request):
         data= LeaderBoards.objects.order_by(by_what)
     if request.user.is_authenticated:
         user = request.user
-        profile = Profile.objects.get(userID = user)    
+        try:
+            Profile.objects.get(userID = user)
+        except Profile.DoesNotExist:
+            return HttpResponseRedirect(reverse('profileForm'))
+        profile = Profile.objects.get(userID = user)
+        
         return render(request,'portfolio/leaderboards.html',{
             'courses': course,
             'yearlevels':year,
