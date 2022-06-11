@@ -154,6 +154,11 @@ def index(request):
         return render(request, "portfolio/index.html")
 
 
+def error(request):
+
+    return render(request,'portfolio/error.html')
+
+
 # https://avatars.githubusercontent.com/John-teology github profile image hehe
 def webscrp(githubName,option=""):
     x = requests.get(f'https://api.github.com/users/{githubName}/repos')
@@ -234,7 +239,9 @@ def saving_score(input,user):
 def profileForm(request):
     email = request.user.email
     if email[-10:] != 'tup.edu.ph':
-        return HttpResponseRedirect(reverse('account_logout'))
+        user = User.objects.get(username = request.user.username)
+        user.delete()
+        return HttpResponseRedirect(reverse('index'))
     userid = User.objects.get(username = request.user)
     if (Profile.objects.filter(userID = userid).count() > 0):
         p = Profile.objects.get(userID = request.user)
@@ -298,31 +305,34 @@ def is_githubnameExist(githubName):
 
 
 def userProfile(request,gitusername):
-    if 'lang_rank' + gitusername in request.session:
-        pass
-    else:
-        request.session['lang_rank' + gitusername] = get_lang_rank(gitusername.lower())
-        request.session['get_overall_rank' + gitusername] = get_overall_rank(gitusername.lower())
-        request.session['webscrp' + gitusername] = webscrp(gitusername,'lang_dict')
-    profile = Profile.objects.get(githubName = gitusername.lower())
-    d = profile.userID
-    user = User.objects.get(username = d)
-    user_P = LeaderBoards.objects.get(userID = d)
-    course = Course.objects.all()
-    year = YearLevel.objects.all()
-    return render(request, 'portfolio/profile.html',{
-        'leader' : user_P,
-        'gitname' : gitusername,
-        'user': user,
-        'profile' : profile, 
-        'p' : request.session['lang_rank' + gitusername],
-        'rank' : request.session['get_overall_rank' + gitusername],
-        'repos' : request.session['webscrp' + gitusername],
-        'dict': nameProb,
-        'courses':course,
-        'yearlevels' :year
-        
-    })
+    try:
+        if 'lang_rank' + gitusername in request.session:
+            pass
+        else:
+            request.session['lang_rank' + gitusername] = get_lang_rank(gitusername.lower())
+            request.session['get_overall_rank' + gitusername] = get_overall_rank(gitusername.lower())
+            request.session['webscrp' + gitusername] = webscrp(gitusername,'lang_dict')
+        profile = Profile.objects.get(githubName = gitusername.lower())
+        d = profile.userID
+        user = User.objects.get(username = d)
+        user_P = LeaderBoards.objects.get(userID = d)
+        course = Course.objects.all()
+        year = YearLevel.objects.all()
+        return render(request, 'portfolio/profile.html',{
+            'leader' : user_P,
+            'gitname' : gitusername,
+            'user': user,
+            'profile' : profile, 
+            'p' : request.session['lang_rank' + gitusername],
+            'rank' : request.session['get_overall_rank' + gitusername],
+            'repos' : request.session['webscrp' + gitusername],
+            'dict': nameProb,
+            'courses':course,
+            'yearlevels' :year
+            
+        })
+    except (KeyError, RuntimeError, Profile.DoesNotExist) as e:
+        return HttpResponseRedirect(reverse('error'))
 
 
 
@@ -377,8 +387,6 @@ def refresh(request,githubname):
 
 
 def leaderboard(request):
-   
- 
     course = Course.objects.all()
     year = YearLevel.objects.all()
     by_what = '-overallScore'
