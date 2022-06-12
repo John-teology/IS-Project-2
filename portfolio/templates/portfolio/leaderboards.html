@@ -39,11 +39,22 @@
    style="margin-bottom: 50px"
  >
    <div id="logo">
+    {% if request.user.is_authenticated %}
+    <a href="{% url 'profile' user %}">
      <img
        id="logo"
        src="https://scontent.fmnl2-2.fna.fbcdn.net/v/t1.15752-9/285301891_375399914621686_9147164360215708785_n.png?_nc_cat=107&ccb=1-7&_nc_sid=ae9488&_nc_eui2=AeHQ3nVoaMPAXDLQw088pXUIbrXWkVHtb7xutdaRUe1vvH2S9M-q5ieOcZIyJ2fjOSoBk_l0BBplLLdperC9JOqY&_nc_ohc=sZXqL8B0WQcAX8d3PqT&_nc_ht=scontent.fmnl2-2.fna&oh=03_AVIFv1yTYPrhRq-mmmflSAKg0NbdAqYcOYGJEQQCLWOeEw&oe=62BDDAF6"
        alt="logo"
      />
+    </a>
+    {% else %}
+    <img
+       id="logo"
+       src="https://scontent.fmnl2-2.fna.fbcdn.net/v/t1.15752-9/285301891_375399914621686_9147164360215708785_n.png?_nc_cat=107&ccb=1-7&_nc_sid=ae9488&_nc_eui2=AeHQ3nVoaMPAXDLQw088pXUIbrXWkVHtb7xutdaRUe1vvH2S9M-q5ieOcZIyJ2fjOSoBk_l0BBplLLdperC9JOqY&_nc_ohc=sZXqL8B0WQcAX8d3PqT&_nc_ht=scontent.fmnl2-2.fna&oh=03_AVIFv1yTYPrhRq-mmmflSAKg0NbdAqYcOYGJEQQCLWOeEw&oe=62BDDAF6"
+       alt="logo"
+     />
+    {% endif %}
+    
    </div>
    <div class="container">
      <div class="collapse navbar-collapse" id="navbarResponsive"  >
@@ -75,7 +86,7 @@
              <button
                type="submit"
                class="nav-link"
-               style="background-color: #bc1823; border: none;"
+               style="background-color: #bc1823; border: none; color: #000;"
              >
                Login
              </button>
@@ -87,7 +98,9 @@
    </div>
  </nav>
    <!-- emd nav -->
+
     <center>
+   <h1>{{user}}</h1>
       
       <form action="{% url 'leaderboard' %}" method="post" style="margin-top: 200px;">
         {% csrf_token %}
@@ -143,7 +156,7 @@
                         <th>Name</th>
                         <th>Course</th>
                         <th>Year</th>
-                        <th>Profile</th>
+                        <th >Profile</th>
                         <th>Score</th>
                       </tr>
                     </thead>
@@ -168,7 +181,7 @@
                           href="{% url 'redirect' d.userID.id %}"
                           style="text-decoration: none; color: #424d54"
                         >
-                          <h6 class="mb-0 font-13">
+                          <h6  style="color: #bc1823 ;">
                             {{d.userProfile.githubName}}
                           </h6>
                           </a>
@@ -200,13 +213,13 @@
                           href="{% url 'redirect' d.userID.id %}"
                           style="text-decoration: none; color: #424d54"
                         >
-                          <h6 class="mb-0 font-13">
+                          <h6 style="color: #bc1823 ;" >
                             {{d.userProfile.githubName}}
                           </h6>
                           </a>
                         </td>
                         <td>
-                          <h6 class="mb-0 font-13">
+                          <h6 class="mb-0 font-13" >
                             {{d.overallScore|floatformat:2}}
                           </h6>
                         </td>

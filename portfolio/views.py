@@ -1,4 +1,5 @@
 from atexit import register
+from distutils.log import error
 from django.core.exceptions import FieldError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -12,6 +13,8 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
+
+from tenacity import retry
 
 
 
@@ -136,7 +139,24 @@ languages = [ '1C Enterprise','ASP.NET','ActionScript','Apex','Assembly','Baller
 
 
 def index(request):
-    return render(request, "portfolio/index.html")
+    if request.user.is_authenticated:
+        user = request.user
+        try:
+            Profile.objects.get(userID = user)
+        except Profile.DoesNotExist:
+            return HttpResponseRedirect(reverse('profileForm'))
+        profile = Profile.objects.get(userID = user)
+        return render(request, "portfolio/index.html",{
+            'user': profile
+            })
+
+    else:       
+        return render(request, "portfolio/index.html")
+
+
+def error(request):
+
+    return render(request,'portfolio/error.html')
 
 
 # https://avatars.githubusercontent.com/John-teology github profile image hehe
@@ -217,6 +237,11 @@ def saving_score(input,user):
 
 @login_required
 def profileForm(request):
+    email = request.user.email
+    if email[-10:] != 'tup.edu.ph':
+        user = User.objects.get(username = request.user.username)
+        user.delete()
+        return HttpResponseRedirect(reverse('index'))
     userid = User.objects.get(username = request.user)
     if (Profile.objects.filter(userID = userid).count() > 0):
         p = Profile.objects.get(userID = request.user)
@@ -238,7 +263,7 @@ def formValidation(request):
         githubName = request.POST['github']
         about = request.POST['aboutMe']
     if is_githubvalid(githubName) == 0:
-        request.session['githuberr'] = 'not valid Github Name'
+        request.session['githuberr'] = 'Invalid Github Name'
         request.session['githubn'] = githubName
         return HttpResponseRedirect(reverse('profileForm'))
     if is_githubnameExist(githubName.lower()):
@@ -280,28 +305,34 @@ def is_githubnameExist(githubName):
 
 
 def userProfile(request,gitusername):
-    profile = Profile.objects.get(githubName = gitusername.lower())
-    d = profile.userID
-    user = User.objects.get(username = d)
-    user_P = LeaderBoards.objects.get(userID = d)
-    lang_rank = get_lang_rank(gitusername.lower())
-    rank = get_overall_rank(gitusername.lower())
-    repos = webscrp(gitusername,'lang_dict')
-    course = Course.objects.all()
-    year = YearLevel.objects.all()
-    return render(request, 'portfolio/profile.html',{
-        'leader' : user_P,
-        'gitname' : gitusername,
-        'user': user,
-        'profile' : profile, 
-        'p' : lang_rank,
-        'rank' : rank,
-        'repos' : repos,
-        'dict': nameProb,
-        'courses':course,
-        'yearlevels' :year
-        
-    })
+    try:
+        if 'lang_rank' + gitusername in request.session:
+            pass
+        else:
+            request.session['lang_rank' + gitusername] = get_lang_rank(gitusername.lower())
+            request.session['get_overall_rank' + gitusername] = get_overall_rank(gitusername.lower())
+            request.session['webscrp' + gitusername] = webscrp(gitusername,'lang_dict')
+        profile = Profile.objects.get(githubName = gitusername.lower())
+        d = profile.userID
+        user = User.objects.get(username = d)
+        user_P = LeaderBoards.objects.get(userID = d)
+        course = Course.objects.all()
+        year = YearLevel.objects.all()
+        return render(request, 'portfolio/profile.html',{
+            'leader' : user_P,
+            'gitname' : gitusername,
+            'user': user,
+            'profile' : profile, 
+            'p' : request.session['lang_rank' + gitusername],
+            'rank' : request.session['get_overall_rank' + gitusername],
+            'repos' : request.session['webscrp' + gitusername],
+            'dict': nameProb,
+            'courses':course,
+            'yearlevels' :year
+            
+        })
+    except (KeyError, RuntimeError, Profile.DoesNotExist) as e:
+        return HttpResponseRedirect(reverse('error'))
 
 
 
@@ -350,8 +381,7 @@ def refresh(request,githubname):
     lead = LeaderBoards.objects.get(userID = user)
     course_id = lead.courseID
     yearlevel_id = lead.yearID
-    if request.method == 'POST':
-        get_score(githubname,user,course_id,yearlevel_id)
+    get_score(githubname,user,course_id,yearlevel_id,profile)
 
     return HttpResponseRedirect(reverse('profile', args=(githubname,)))
 
@@ -390,17 +420,37 @@ def leaderboard(request):
     else:
         lang = ''
         data= LeaderBoards.objects.order_by(by_what)
+    if request.user.is_authenticated:
+        user = request.user
+        try:
+            Profile.objects.get(userID = user)
+        except Profile.DoesNotExist:
+            return HttpResponseRedirect(reverse('profileForm'))
+        profile = Profile.objects.get(userID = user)
         
-    return render(request,'portfolio/leaderboards.html',{
-        'courses': course,
-        'yearlevels':year,
-        'languages': languages,
-        'data' : data,
-        'select1': select1,
-        'select2': select2,
-        'select3': select3,
-        'lang' : lang,
-    })
+        return render(request,'portfolio/leaderboards.html',{
+            'courses': course,
+            'yearlevels':year,
+            'languages': languages,
+            'data' : data,
+            'select1': select1,
+            'select2': select2,
+            'select3': select3,
+            'lang' : lang,
+            'user' : profile
+        })
+    else:
+        return render(request,'portfolio/leaderboards.html',{
+            'courses': course,
+            'yearlevels':year,
+            'languages': languages,
+            'data' : data,
+            'select1': select1,
+            'select2': select2,
+            'select3': select3,
+            'lang' : lang,
+        })
+
 
 def redirect(request,userid):
     p = Profile.objects.get(userID = userid)

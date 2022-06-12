@@ -9,15 +9,12 @@
     <title>Profile</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-
-
-    
     <link
       href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
       rel="stylesheet"
       id="bootstrap-css"
     />
-    
+
     <link
       href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
       rel="stylesheet"
@@ -35,62 +32,61 @@
   </head>
   <body>
     <nav
-   class="navbar navbar-expand-lg navbar-custom fixed-top"
-   style="margin-bottom: 50px"
- >
-   <div id="logo">
-     <img
-       id="logo"
-       src="https://scontent.fmnl2-2.fna.fbcdn.net/v/t1.15752-9/285301891_375399914621686_9147164360215708785_n.png?_nc_cat=107&ccb=1-7&_nc_sid=ae9488&_nc_eui2=AeHQ3nVoaMPAXDLQw088pXUIbrXWkVHtb7xutdaRUe1vvH2S9M-q5ieOcZIyJ2fjOSoBk_l0BBplLLdperC9JOqY&_nc_ohc=sZXqL8B0WQcAX8d3PqT&_nc_ht=scontent.fmnl2-2.fna&oh=03_AVIFv1yTYPrhRq-mmmflSAKg0NbdAqYcOYGJEQQCLWOeEw&oe=62BDDAF6"
-       alt="logo"
-     />
-   </div>
-   <div class="container">
-  
-     <div class="collapse navbar-collapse" id="navbarResponsive">
-       <ul class="navbar-nav ml-auto">
-         <li style="padding-right: 200px;"></li>  
-         <!-- margin or padding to adjust to left pota -->
-         <li class="nav-item active">
-           <a class="nav-link" href="{% url 'index' %}" style="color: #ccc"
-             >Home
-             <span class="sr-only">(current)</span>
-           </a>
-         </li>
-         <li class="nav-item">
-           <a
-             class="nav-link"
-             href="{%url 'leaderboard' %}"
-             style="color: #ccc"
-             >Leaderboard</a
-           >
-         </li>
-         <li class="nav-item">
-           {% if request.user.is_authenticated %}
-           <a
-             class="nav-link"
-             href="{%url 'leaderboard' %}"
-             style="color: black"
-             >{{request.user.last_name}}</a
-           >
-           {% else %}
-           <form action="{% provider_login_url 'google' %}" method="post">
-             {% csrf_token %}
-             <button
-               type="submit"
-               class="nav-link"
-               style="background-color: #bc1823; border: none;"
-             >
-               Login
-             </button>
-           </form>
-           {% endif %}
-         </li>
-       </ul>
-     </div>
-   </div>
- </nav>
-   <!-- emd nav -->
+      class="navbar navbar-expand-lg navbar-custom fixed-top"
+      style="margin-bottom: 50px"
+    >
+      <div id="logo">
+        <img
+          id="logo"
+          src="https://scontent.fmnl2-2.fna.fbcdn.net/v/t1.15752-9/285301891_375399914621686_9147164360215708785_n.png?_nc_cat=107&ccb=1-7&_nc_sid=ae9488&_nc_eui2=AeHQ3nVoaMPAXDLQw088pXUIbrXWkVHtb7xutdaRUe1vvH2S9M-q5ieOcZIyJ2fjOSoBk_l0BBplLLdperC9JOqY&_nc_ohc=sZXqL8B0WQcAX8d3PqT&_nc_ht=scontent.fmnl2-2.fna&oh=03_AVIFv1yTYPrhRq-mmmflSAKg0NbdAqYcOYGJEQQCLWOeEw&oe=62BDDAF6"
+          alt="logo"
+        />
+      </div>
+      <div class="container">
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li style="padding-right: 800px"></li>
+            <!-- margin or padding to adjust to left pota -->
+            <li class="nav-item active">
+              <a class="nav-link" href="{% url 'index' %}" style="color: #ccc"
+                >Home
+                <span class="sr-only">(current)</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="{%url 'leaderboard' %}"
+                style="color: #ccc"
+                >Leaderboard</a
+              >
+            </li>
+            <li class="nav-item">
+              {% if request.user.is_authenticated %}
+              <a
+                class="nav-link"
+                href="{%url 'leaderboard' %}"
+                style="color: black"
+                >{{request.user.last_name}}</a
+              >
+            </li>
+            {% else %}
+            <form action="{% provider_login_url 'google' %}" method="post">
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="nav-link"
+                style="background-color: #bc1823; border: none; padding-top: 15px;"
+              >
+                Login
+              </button>
+            </form>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- emd nav -->
     <div class="container">
       <div class="row">
         <div class="col-lg-3 col-md-4">
@@ -110,13 +106,12 @@
               </div>
               {% if leader.userID.username == request.user.username %}
               <a
-                action="{% url 'refresh' gitname %}"
+                href="{% url 'refresh' gitname %}"
                 style="color: #bc1823; padding-bottom: 20px"
               >
                 Update <i class="fa fa-refresh" style="color: #bc1823"></i>
               </a>
               {% endif %}
-
               <div class="text-left m-t-40">
                 <p class="text-muted font-13">
                   <strong>Full Name :</strong>
@@ -280,7 +275,12 @@
                     </div>
                     <div class="form-group">
                       <label for="course">Course</label>
-                      <select name="courseid" id="course" class="form-control">
+                      <select
+                        name="courseid"
+                        id="course"
+                        class="form-control"
+                        style="height: 30px"
+                      >
                         <option value="" disabled selected>
                           Select your Course
                         </option>
@@ -291,7 +291,12 @@
                     </div>
                     <div class="form-group">
                       <label for="year">Year Level</label>
-                      <select name="yearlevelid" id="year" class="form-control">
+                      <select
+                        name="yearlevelid"
+                        id="year"
+                        class="form-control"
+                        style="height: 30px"
+                      >
                         <option value="" disabled selected>
                           Select your Year Level
                         </option>
@@ -316,6 +321,14 @@
                     >
                       Save
                     </button>
+                  </form>
+                  <form
+                    method="post"
+                    action="/accounts/logout/"
+                    style="margin-top: 10px"
+                  >
+                    {% csrf_token %}
+                    <button class="btn btn-dark" type="submit">Sign Out</button>
                   </form>
                 </div>
                 {% endif %}

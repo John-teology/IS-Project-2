@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Error </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <link
+      href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div class="container bootstrap snippets bootdey">
+      <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-10 col-md-offset-1 pull-right">
+              <img
+                class="img-error"
+                src="https://bootdey.com/img/Content/fdfadfadsfadoh.png"
+              />
+              <p>Sorry, an error has occured, Requested page not found!</p>
+              <div class="error-actions">
+                <a href="{% url 'index' %}" class="btn btn-danger btn-lg">
+                  <span class="glyphicon glyphicon-arrow-left"></span>
+                  Back Home
+                </a>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <style type="text/css">
+      body {
+        background: #bc1823;
+        background-image: -moz-radial-gradient(
+          center 45deg,
+          circle cover,
+          #bc1823,
+          #bc1823
+        );
+        background-image: -webkit-gradient(
+          radial,
+          50% 50%,
+          0,
+          50% 50%,
+          800,
+          from(#cf726b),
+          to(#bc1823)
+        );
+        padding-top: 15%;
+      }
+      .img-error {
+        width: 220px;
+        height: 220px;
+      }
+    </style>
+
+    <script type="text/javascript"></script>
+  </body>
+</html>
