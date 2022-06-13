@@ -282,7 +282,7 @@
                         class="form-control"
                         style="height: 30px"
                       >
-                        <option value="" disabled selected>
+                        <option  value="{{leader.courseID.id}}" selected hidden>
                           Select your Course
                         </option>
                         {% for course in courses %}
@@ -298,7 +298,7 @@
                         class="form-control"
                         style="height: 30px"
                       >
-                        <option value="" disabled selected>
+                        <option value="{{leader.yearID.id}}" selected hidden>
                           Select your Year Level
                         </option>
                         {% for yearlevel in yearlevels %}
@@ -313,8 +313,7 @@
                         name="aboutMe"
                         id="AboutMe"
                         class="form-control"
-                        placeholder="{{profile.aboutMe}}"
-                      ></textarea>
+                      >{{profile.aboutMe}}</textarea>
                     </div>
                     <button
                       class="btn btn-primary waves-effect waves-light w-md"
@@ -616,6 +615,25 @@
       .popup_flight_travlDil .content_flightht_travel_dil {
         max-height: 30%;
         overflow: auto;
+      }
+      
+      .navbar-custom {
+        background-color: #bc1823;
+      }
+      /* Modify brand and text color */
+
+      .navbar-custom .navbar-brand,
+      .navbar-custom .navbar-item .nav-link {
+        color: rgb(255, 255, 255);
+      }
+      .navbar a {
+        font-family: "Lato", sans-serif;
+        font-weight: bold;
+      }
+      .logo {
+        position: fixed;
+        top: 0;
+        margin-top: 16px;
       }
       /* chart */
     </style>
