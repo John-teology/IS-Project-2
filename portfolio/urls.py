@@ -1,6 +1,4 @@
 from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
 
 from . import views
 
@@ -13,5 +11,7 @@ urlpatterns = [
     path('leaderboards/',views.leaderboard, name='leaderboard'),
     path('redirect/<int:userid>',views.redirect, name='redirect'),
     path('update/<str:gitname>',views.update_profile, name='update'),
+    path('error',views.error, name='error'),
+
     
 ]

@@ -1,20 +1,14 @@
-from atexit import register
-from distutils.log import error
 from django.core.exceptions import FieldError
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseRedirect 
 from django.shortcuts import render
 from django.urls import reverse 
 from django.contrib.auth.decorators import login_required
-from allauth.socialaccount.models import SocialAccount
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
 
-from tenacity import retry
 
 
 

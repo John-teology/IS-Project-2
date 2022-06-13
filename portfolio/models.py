@@ -1,5 +1,3 @@
-from turtle import ondrag
-from unicodedata import decimal
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.deletion import CASCADE

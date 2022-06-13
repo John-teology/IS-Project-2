@@ -1,0 +1,1 @@
+web: gunicorn ISP.wsgi --log-file -
