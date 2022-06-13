@@ -186,7 +186,6 @@ SOCIALACCOUNT_PROVIDERS = {
 CRISPY_TENPLATE_PACK = "baotstrap4"
 
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 
