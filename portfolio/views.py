@@ -1,9 +1,5 @@
-from atexit import register
-from distutils.log import error
 from django.core.exceptions import FieldError
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseRedirect 
 from django.shortcuts import render
 from django.urls import reverse 
