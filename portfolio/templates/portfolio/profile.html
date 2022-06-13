@@ -208,7 +208,7 @@
                   <div class="row">
                     {% for key,val in repos.items %}
                     <div class="col-sm-4">
-                      <a class="button" href="#{{key}}">
+                      <a class="button" href="#{{key}}" style="text-decoration: none; color: #7a7676;">
                         <div class="gal-detail thumb">
                           <img
                             src="https://icon-widget.codersrank.io/api/Github"
@@ -240,9 +240,10 @@
                           />
                         </a>
                         <br />
-                        <h4 class="text-center">
-                          {% update_variable key %}: TOP {{value}}
+                        <h4 class="text-center" >
+                          {% update_variable key %} 
                         </h4>
+                        <h4 class="text-center">TOP {{value}}</h4>
                         <div class="ga-border"></div>
                         <p class="text-muted text-center">
                           <small>

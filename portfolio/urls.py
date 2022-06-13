@@ -13,5 +13,7 @@ urlpatterns = [
     path('leaderboards/',views.leaderboard, name='leaderboard'),
     path('redirect/<int:userid>',views.redirect, name='redirect'),
     path('update/<str:gitname>',views.update_profile, name='update'),
+    path('error',views.error, name='error'),
+
     
 ]
