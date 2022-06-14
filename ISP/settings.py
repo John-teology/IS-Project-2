@@ -25,7 +25,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost:8000','tuportfolio.herokuapp.com']
+ALLOWED_HOSTS = ['*']
 
 
 
@@ -35,6 +35,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'portfolio',
     'django.contrib.sites',
+    
+    'whitenoise.runserver_nostatic',
 
     'allauth',
     'allauth.account',
@@ -95,6 +97,11 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
+import dj_database_url
+db_from_env = dj_database_url.config(conn_max_age=600)
+DATABASES['default'].update(db_from_env)
 
 
 # Password validation
@@ -185,6 +192,10 @@ SOCIALACCOUNT_PROVIDERS = {
 
 STATIC_ROOT = os.path.join(BASE_DIR,'static')
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+MEDIA_URL = '/media/'
 
 CRISPY_TENPLATE_PACK = "baotstrap4"
 
