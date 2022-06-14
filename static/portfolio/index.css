@@ -1,0 +1,57 @@
+.carousel-item {
+  height: 100vh;
+  min-height: 330px;
+  background: no-repeat center center scroll;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+section {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+.lnr {
+  display: inline-block;
+  fill: #bc1823;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.05em;
+  stroke-width: 1;
+}
+
+.services-icon {
+  margin-bottom: 20px;
+  font-size: 30px;
+}
+.vLine,
+.hLine {
+  background-color: #0f52ba;
+}
+
+.quote-icon {
+  font-size: 40px;
+  margin-bottom: 20px;
+}
+.services-icon {
+  font-size: 60px;
+  margin-left: 2rem;
+}
+.navbar-custom {
+  background-color: #bc1823;
+}
+/* Modify brand and text color */
+
+.navbar-custom .navbar-brand,
+.navbar-custom .navbar-item .nav-link {
+  color: rgb(255, 255, 255);
+}
+.navbar a {
+  font-family: "Lato", sans-serif;
+  font-weight: bold;
+}
+.logo {
+  position: fixed;
+  top: 0;
+  margin-top: 16px;
+}

@@ -25,7 +25,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['tuportfolio.herokuapp.com','localhost:8000']
 
 
 
@@ -200,3 +200,5 @@ MEDIA_URL = '/media/'
 CRISPY_TENPLATE_PACK = "baotstrap4"
 
 
+# push local database:PGUSER=postgres PGPASSWORD=password  heroku pg:push postgres://name_of_host/name_of_local_database nameOfHerokuDB
+# DATABASE_URL: postgres://jkhjirvgyvptzl:b18d89d630d9b29a76b2bba61c40753565f89011310826082c4c5fc98f5507cb@ec2-23-23-182-238.compute-1.amazonaws.com:5432/ddbuipei9g37kb
