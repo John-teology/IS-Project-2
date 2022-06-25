@@ -25,9 +25,9 @@ SECRET_KEY = 'django-insecure-8mh37lfbtg(s5@ql-3!g827mbcy^u76%4t#h4ww976*jxt-1_z
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['tuportfolio.herokuapp.com','localhost:8000']
+ALLOWED_HOSTS = []
 
 
 
